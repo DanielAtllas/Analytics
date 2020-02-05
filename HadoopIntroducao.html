@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8">
+        <title>Hadoop - Introdução - Analytics</title>
+        <meta name="description" content="Este é um site referênte à estudos sobre Analytics">
+    </head>
+    
+    <body>
+        <h1>Apache Hadoop - Introdução - Analytics</h1>
+        <p>O apache hadoop é um freamework de armazenamento e processamento de Big Data, sendo um software oper sorce para esses grandes conjuntos de dados em clusters (conjuntos de máquinas respondendo como 1 só) de hardware de baixo custo, além de ser um sistema de armazenamento compartilhado, distribuído e de alta confiabilidade. Perceba que o cluster é essêncial para estes conceitos, uma vez que essa massa enorme de dados não é cabível em apenas uma máquina para o processamento e armazenamento dos mesmos, necessitando então da utilização de clusters. Dessa forma, o Hadoop se inicia para trabalhar este processo do Big Data em clusters.</p>
+        <p>Ou seja, o Apache Hadoop facilita o funcionamento de diversos computadores, com o bjetivo de analisar grandes volumes de dados, através de um conjunto de softwares que trabalham estes conceitos. Estes softwares se juntam como um framework para formar o Hadoop. Sendo composto por 3 módulos, sendo eles:</p>
+        <ul>
+            <li><strong>HDFS</strong> - Ou Hadoop Distributed File System, onde é o processo de distribuir arquivos de dados em discos em várias máquinas, de forma a que os dados sejam gravados e lidos em vários discos de armazenamento (ressaltando que se caso um dos discos seja desativado, o HDFS tem o trabalho de armazenar os dados do disco e distribui-los nos demais, como uma forma de segurança e prevenção). O HDFS possui 2 tipos de nodes, sendo o <strong>Namenode</strong> (ou master node, responsável por gerenciar os demais nodes, a estrutura do <i>filesystem</i> e os metadados de todos os arquivos e diretórios da estrutura) e os <strong>Datanodes</strong> (ou worker node, os "trabalhadores" repsonsáveis por prcessar os dados, armazenando e buscando blocos de dados quando solicitado).</li>
+            <br>
+            <li><strong>Hadoop Yarn</strong> - Tem o objetivo de gerenciar os processos gerados pelo HDFS, sendo um módulo novo no Apache.</li>
+            <br>
+            <li><strong>Hadoop MapReduce</strong> - Tem a função de processar os dados armazenados pelo HDFS em um ambiente distribuído, gerenciando o processamento desses dados. Sendo um odelo de programação para a geração de grandes conjuntos de dados, tranformando a análise dos dados em conjuntos de <strong>chaves e valores</strong>, aplicando uma regra de mapeamento nos dados coletados e convertendo-os em pares de <i>Keys</i> e <i>Values</i> (K1:V). Ou seja, fazendo um mapeamento e redução dos dados coletados e entregando-os como resultando em uma forma mais compacta e clara.</li>
+            <p>O MapReduce permite a execução de <strong><i>Querys ad-hoc</i></strong> em todo o conjunto de dados em um tempo escalável, Queryes essas que são executadas e processadas diretamento no cluster, sem precisar de uma interface, combinando dados de múltiplas fontes. Além de realizar um balanceamento entre <strong><i>seeking</i></strong> e <strong><i>transfer</i></strong>, reduzindo as operações de <i>seeking</i> e usando de forma efetiva as de <i>transfer</i> (leitura e transferência em discos).</p>
+            <p>Além de permitir a atualização de um grande conjunto de dados (diferente dos bancos SQL que se preocupam especificamente de linhas de um conjunto), utilizando de operações de <i>SORT</i> e <i>Merge</i> para recriar o banco de dados, o que é dependente de operações de transfer, o que deixa o acesso aos dados mais veloz.</p>
+        </ul>
+        <p>Dessa forma, o Hadoop permite executar aplicações em sistemas distribuídos através de diversos computadores, os chamados <strong>nodes</strong>, envolvendo <i>petabytes</i> de dados. O HSFD possui então a função de permitir uma rápida transferência de dados entre esses nodes. Uma das principais características do Apache Hadoop é a confiabilidade e sua <strong>capacidade de se recuperar de falhas automaticamente</strong>.</p>
+        <p>Portanto, o Hadoop possui algumas características que o torna tão exigido em projetos de Big data, como <strong>baixo custo, escalável, Tolerante a falhas, flexível e open surce.</strong>, além de uma portabilidade entre hardwares e S.O. heterogêneos e uma confiabilidade através da manutenção de várias cópias de dados. Assim como uma capacidade de processamentode todos os dados de tipo e formato (seja SQL ou NOSQL) e um suporte a diversas linguagens de programação (como Java, C++ e Python).</p>
+        <hr>
+        <h3>Arquitetura Hadoop</h3>
+            <p>É necessário entender que o Hadoop <strong>não é um banco de dados</strong>, mas sim um framework para armazenamento e processamento de grandes conjuntos de dados, possuindo diferenças como:</p>
+            <ul>
+                <li>Modelo de computação</li>
+                    <ol>
+                        <li>Conceito de Jobs</li>
+                        <li>Cada job é uma unidade de trabalho</li>
+                        <li>não há controle de concorrência</li>
+                    </ol>
+                    <br>
+                <li>Modelo de dados</li>
+                    <ol>
+                        <li>Qualquer tipo de dado pode ser usado</li>
+                        <li>Dados em qualquer formato</li>
+                        <li>Modelo de apenas leitura</li>
+                    </ol>
+                    <br>
+                <li>Modelo de custo</li>
+                    <ol>
+                        <li>Máquinas de custo mais baixo podem ser usadas</li>
+                    </ol>
+            </ul>
+            <p>Além de possuir serviços que são trabalhados para a realização do funcionamento do Hadoop, que são feitos pelos Namenodes e Datanodes:</p>
+            <ul>
+                <li><strong>NameNode</strong> - Possui a função de gerenciar o armazenamento distribuído (principal serviço)</li>
+                <br>
+                <li><strong>DataNode</strong> - Serviço responsável pelo armazenamento e redistribuição dos dados</li>
+                <br>
+                <li><strong>JobTracker</strong> - Função de disparar os jobs e ser executado pelos dados, sendo um gestor das execuções</li>
+                <br>
+                <li><strong>TaskTracker</strong> - Quem irá realizar a execução das tarefas</li>
+            </ul>
+            <p>Diante disso, os dados são enviados para o cluster Hadoop, adquirindo os dados independente de onde seja a fonte (seja um Banco SQL ou até mesmo de redes sociais), trabalho esse realizado pelo NameNode e DataNode.</p>
+            <p>Feito isso, é realizado o mapeamento e redução, realizado por um modelo de programa de linguagem de programação, realizados pelo desenvolvedor e processado e trabalhado peloJobTracker e TaskTracker</p>
+            <h4>Modos de configuração do Hadoop</h4>
+                <p>O Apache Hadoop pode ser configurado de 3 formas diferentes, pela sua liberdade e flexibilidade, permitindo ao usuário as configurações:</p>
+                <ol>
+                    <li><strong>StandAlone</strong> - Onde todos os serviços Hadoop são executados em uma única JVM (Java Virtual Machine), no mesmo servidor. Sendo recomendado apenas para ambientes de testes, tendo uma capacidade mais simplória.</li>
+                    <br>
+                    <li><strong>Pseudo Distribuído</strong> - Que são serviços individuais do Hadoop são atribuídos a JVM's individuais, ou seja, cada serviço Hadoop terá sua Virtual Machine, requerindo um grande capacidade de memória, no mesmo servidor.</li>
+                    <br>
+                    <li><strong>Totalmente Distribuído</strong> - Sendo o mais recomendado para ambientes de produção, os seus serviços individuais são executados em JVM's individuais, mas através do cluster.</li>
+                </ol>
+            <h4>Distributed Cache</h4>
+                <p>Ou cache distribuído, é uma funcionalidade do Hadoop que permite cache dos arquivos usados pelas aplicações. Isso permite ganhos consideráveis na performance no acesso aos dados por MapReduce, além de permitir que um node do cluster acessos os arquivos no filesystem local.</p>
+            <h4>Kerberos</h4>
+                <p>Sendo um mecanismo de autenticação de segurança (também usado em sistemas de diretórios Windows e Linux). Por default, o Hadoop se encontra no modo <i>não-seguro</i> não necessitando da autenticação real, podendo ser configurado e executado em modo de segurança, onde cada usuário e serviço precisa ser autenticado pelo Kerberos, a fim de utilizar os serviços do Hadoop.</p>
+        <hr>
+        
+    </body>
+</html>
