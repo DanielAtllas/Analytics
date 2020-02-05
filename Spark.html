@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8">
+        <title>Spark -  Analytics</title>
+        <meta name="description" content="Este é um site referênte à estudos sobre Analytics">
+    </head>
+    
+    <body>
+        <h1>Apache Spark - Introdu - Analytics</h1>
+        <p>O Spark é um engine rápido e de uso geral para processamento de dados em larga escala, sendo maiz veloz que o MapReduce do Hadoop, sendo similar ao mesmo. Além de utilizar do HDFS do Hadoop como base (não excluindo a opção de outros softwares) e utiliza-se de linguagem de programação para seus desenvolvimentos, como as linguagens Python, R e Java.</p>
+        <p>O Spark possui uma enorme consideração de velocidade, em relação ao MapReduce do Hadoop, onde sua velocidade de execução pode ser aé 100x mais rápido em memória e até 10x em discos, assim como a sua facilidade de uso é algo a se levar em consideração, onde como dito anteriormente, é aceitável aplicações através de linguagens de programação, como o Python. No entanto, não é algo que deve ser trabalhado sem aplicações do Hadoop, uma vez que a junção dos dois apaches transformará um alto desempenho. Exemplo que por possuir integração com o Hadoop, o Spark executa sobre o YARN cluster manager e permite a leitura e escrita e de dados no HDFS do Hadoop.</p>
+        <p>O projeto Spark contém diversos componentes integrados. Basicamente, sendo uma engine de computação, responsável por agendar, distribuir e monitorar aplicações de diversas tarefas de processamento através de diferentes servidores em cluster. Assim como também é um tipo de framework (assim como o Hadoop), onde é constituído por outros softwares com funções diferentes, sendo os principais:</p>
+        <ul>
+            <li><strong>Spark Core</strong> - Contendo as funcionalidades básicas do Spark, incluindo componentes para agendamento de tarefas, gestão de memória, recuperação de falaha e sistemas de armazenamento.</li>
+            <li><strong>Spark SQL</strong> - Sendo um pacote para tarefas com dados estruturados, permitindo a realização de Querys nos dados através da linguagem SQL, além de suportar diversas fontes de dados.</li>
+            <li><strong>Spark Streaming</strong> - Componente de framework Spark para processamento de streams de dados em tempo real, ou seja, dados gerados de forma contínua e periodicamente.</li>
+            <li><strong>Spark MLib</strong> - Sendo a biblioteca MLib uma funcionalidade para <i>machine learning</i>.</li>
+        </ul>
+        <hr>
+        <h3>Apache Hadoop X Spark</h3>
+            <p>Muitas dúvidas são geradas sobre qual dos 2 frameworks usar, além de dúvidas como <i>"Já estou usando o Hadoop, devo usar o spark?"</i> ou até mesmo <i>"Qual dos 2 frameworks devo optar para minhas soluções?"</i>. Para isso, deve ser levado em consideração os 2 lados. Portanto, seguem as diferenças:</p>
+            <p>O Hadoop é a plataforma original do Big Data, que tem sido usado e testado no merdado, permitindo trabalhar com Petabytes de dadps. habilitando a análise de quantidades massivas de dados. Além disso, possui um ecossistema bem definido que permite estender suas funções, como no caso da utilização do <i>Hive e Hbase</i>. Ou seja, foi criado com a intenção de processar grandes volumes de dados em batch, o que gera uma dúvida. E se o usuário decidir utilizar dessas aplicações em uma quantidade menor de dados, não precisando de tantas aplicações assim? e se o fluxo desses dados for contínuo, onde o volume de dados é derivado de straming?</p>
+            <p>Diante disso, o Hadoop possui algumas limitações a essas necessidades, como em casos de <strong>Programação interativa e Streaming de dados</strong>. Foi então que o Apache Spark veio para fornecer essa disponibilidade, possuindo características como:</p>
+            <ul>
+                <li><strong>Velocidade</strong> - Dados em memória sendo processados até 100x mais rápidos.</li>
+                <br>
+                <li><strong>Propósito Geral</strong> - Funcionalidades SQL, Streaming e Machine Learning.</li>
+                <br>
+                <li><strong>Compatibilidade</strong> - Integração com outros softwares e freameworks, como o próprio Hadoop, HDFS, Cassandra e etc.</li>
+            </ul>
+            <p>Além de ser inteiramente mais fácil e simples de manuseio, sendo também, a primeira plataforma de Big Data a integrar Batch, streaming e computação interativa.</p>
+    </body>
+</html>
