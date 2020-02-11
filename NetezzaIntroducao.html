@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8">
+        <title>Netezza - Introdução Analytics</title>
+        <meta name="description" content="Este é um site referênte à estudos sobre Analytics">
+    </head>
+    
+    <body>
+        <h1>Netezza - Introdução - Analytics</h1>
+        <p>O Netezza é uma plataforma criada pela empresa de mesmo nome com o objetivo de concorrer com sistemas de DW existentes, sendo composto por um conjunto de hardware e software projetaos para a melhoria do desempenho de consultas SQL em sistemas Data Warehouse, retornando uma grande quantidade de dados em um curto espaço de tempo. Já em 2010, o Netezza foi comprado pela IBM com o objetivo de aprimorar a plataforma, adicionando-o à estrutura <i>IBM PureSystem</i>, passando então por uma retitulação, onde o Netezza agora é <strong><i>IBM PureData Systems for Analytics</i></strong>.</p>
+        <p>O sistema Netezza é composto por um conjunto de gabinites, que são gerenciados por servidores <i>Snippet Blades</i> ou <strong><i>S-Blades</i></strong>. Estes são responsáveis pelo processamento das consultas que serão retornadas aos servidores, funcionando como interface entre as aplicações e os dados armazenados no Netezza. Os servidores S-Blades ou SPA (<i>Snippet Process Array</i>) são blades utilizadas para processamento das requisições enviadas aos databases, onde cada SPA contém um SPU. A imagem abaixo representa a arquitetura/estrutura usada pelo Netezza:</p>
+        <img src="https://arquivo.devmedia.com.br/REVISTAS/sql/imagens/137/8/1.jpg">
+        <p>Por se tratar de uma aplicação que utiliza de bancos de dados, é preciso uma linguagem SQL para as atuações e consultas em cada registro desses bancos, a chamada linguagem <strong>NZSQL</strong>. Os comandos Netezza NZSQL será interpretado pelo Netezza host ou qualquer sistema Linux que possa ser conectado com esta plataforma. Assim como nas demais linguagens SQL, através do NZSQL é possível obter relatórios de performance da base, criar databases e objetos, rodar queries e monitorar diferents databases criadas em um servidor.</p>
+        <hr>
+        <h3>Principais Comandos NZSQL</h3>
+        <p>Como dito anteriormente, a linguagem SQL usada pelo Netezza, foi desenvolvida para a manipulação dos dados que serão trabalhados em determinadas bases. O primeiro comando a ser usado é o de start do Netezza, dado pelo comando <strong>nzsql</strong> diretamente no bash do Linux. Este fará com que o Netezza seja iniciado no Sitema Operacional exibindo as seguintes informações:</p>
+        <img src="https://dwgeek.com/wp-content/uploads/2016/08/Netezza-nzsql-command.jpg">
+        <p>Logo em seguida, será preciso iniciar uma conexão com uma base, sendo preciso passar parâmetros como o nome e senha do usuário, a base e o host. Uma outra forma de realizar esse procedimento, é inserindo todo o comando junto aos parâmetros em variáveis, dessa forma, sempre que necessária a conexão, basta passar apenas a variável. Esse procedimento é realizado pelo comando abaixo:</p>
+        <pre>
+    <strong>nzsql -u</strong> <i>username</i> <strong>-pw</strong> <i>password</i> <strong>-d</strong> <i>database</i> <strong>-host</strong> <i>Host</i>
+        </pre>
+        <p>Feita a conexão com a base, um comando que pode servir de grande ajuda, é o <strong>\set</strong>, o qual fornecerá informações sobre o próprio Netezza e a base em que o usuário se encontra, como a versão do Netezza, o usuário, host, porta, database e etc. Além disso, os comando DML sãoexatamente iguais na linguagem NZSQL (comandos de manipulação de dados), como <strong>insert into, update, delete from, truncate table e drop table</strong>. Assim como os comandos e parâmetros do Linux. Segue uma lista desses comandos de opção do Linux usados pelo NZSQL:</p>
+        <table border=3 width='50%'>
+            <tr colspan="4" bgcolor="#0B4C5F">
+                <style>th{color:white}</style>
+            <th>Parâmetro</th>                      <th>Descrição</th>
+            </tr>
+            <tr> <td>-a</td>						<td>Echo all input from script</td></tr>
+            <tr> <td>-A</td>						<td>Unaligned table output mode (-P format=unaligned)</td></tr>
+            <tr> <td>-c <i>query</i></td>			<td>Run only single query (or slash command) and exit</td></tr>
+            <tr> <td>-d <i>dbname</i></td>			<td>database name to connect to (default: system)</td></tr>
+            <tr> <td>-D <i>dbname</i></td>			<td>Specify database name to connect to (default: system)</td></tr>
+            <tr> <td>-schema <i>schemaname</i></td>	<td>Specify schema name to connect to (default: $NZ_SCHEMA)</td></tr>
+            <tr> <td>-e</td>						<td>Echo queries sent to backend</td></tr>
+            <tr> <td>-E</td>						<td>Display queries that internal commands generate</td></tr>
+            <tr> <td>-f <i>filename</i></td>		<td>Execute queries from file, then exit</td></tr>
+            <tr> <td>-F <i>string</i></td>			<td>Set field separator (default: “|”)</td></tr>
+            <tr> <td>-host <i>host</i></td>			<td>Specify database server host (default: 127.0.0.1)</td></tr>
+            <tr> <td>-h <i>host</i></td>			<td>Specify database server host (default: 127.0.0.1)</td></tr>
+            <tr> <td>-H</td>						<td>HTML table output mode (-P format=html)</td></tr>
+            <tr> <td>-l</td>						<td>List available databases, then exit</td></tr>
+            <tr> <td>-n</td>						<td>Disable readline</td></tr>
+            <tr> <td>-o <i>filename</i></td>		<td>Send query output to filename (or |pipe)</td></tr>
+            <tr> <td>-O <i>filename</i></td>		<td>Send query output with errors to filename (or |pipe)</td></tr>
+            <tr> <td>-port <i>port</i></td>			<td>Specify database server port (default: hardwired)</td></tr>
+            <tr> <td>-P var[=arg]</td>				<td>Set printing option ‘var’ to ‘arg’ (see \pset command)</td></tr>
+            <tr> <td>-q</td>						<td>Run quietly (no messages, only query output)</td></tr>
+            <tr> <td>-r</td>						<td>Suppress row count in query output</td></tr>
+            <tr> <td>-R <i>string</i></td>			<td>Set record separator (default: newline) (-P recordsep=)</td></tr>
+            <tr> <td>-Rev</td>						<td>Show version information and exit</td></tr>
+            <tr> <td>-rev</td>						<td>Show version information and exit</td></tr>
+            <tr> <td>-s</td>						<td>Single step mode (confirm each query)</td></tr>
+            <tr> <td>-S</td>						<td>Single line mode (newline terminates query)</td></tr>
+            <tr> <td>-t</td>						<td>Print rows only (-P tuples_only)</td></tr>
+            <tr> <td>-time</td>						<td>Print time taken by queries</td></tr>
+            <tr> <td>-T text</td>					<td>Set HTML table tag options (width, border) (-P tableattr=)</td></tr>
+            <tr> <td>-u <i>username</i></td>		<td>Specify database username (default: admin)</td></tr>
+            <tr> <td>-U <i>username</i></td>		<td>Specify database username (default: admin)</td></tr>
+            <tr> <td>-v name=val</td>				<td>Set nzsqlvariable ‘name’ to ‘value’</td></tr>
+            <tr> <td>-V</td>						<td>Show version information and exit</td></tr>
+            <tr> <td>-w</td>						<td>Don’t require password, other mechanisms (Kerberos) will supply it</td></tr>
+            <tr> <td>-W <i>password</i></td>		<td>Specify the database user password</td></tr>
+            <tr> <td>-x</td>						<td>Turn on expanded table output (-P expanded)</td></tr>
+            <tr> <td>-X</td>						<td>Do not read startup file (~/.nzsqlrc)</td></tr>
+            <tr> <td>-pw <i>password</i></td>		<td>Specify the database user password</td></tr>
+            </table>
+    </body>
+</html>
