@@ -66,5 +66,37 @@
             <tr> <td>-X</td>						<td>Do not read startup file (~/.nzsqlrc)</td></tr>
             <tr> <td>-pw <i>password</i></td>		<td>Specify the database user password</td></tr>
             </table>
+        <p>Esses comandos são os chamados comandos de opção, os quais podem ser usadas junto a outros comandos via Linux com o intuito de consultar algo no sistema operacional ou até mesmo no próprio Netezza. Como dito anteriormente, por seguir uma lógica de comandos SQL, o NZSQL também usufrui de tabelas de sistema e views que possuem dados sobre tabelas, colunas, usuários e etc. Fontes essas de fácil acesso e com informações que podem cooperar muito durante uma operação. Seguem as principais views e tabelas de sistema no Netezza:</p>
+        <table border=3 width='50%'>
+            <tr colspan="4" bgcolor="#0B4C5F">
+                <style>th{color:white}</style>
+            <th>View</th>                      <th>Descrição</th>
+            </tr>
+            <tr> <td>_v_sys_columns			</td>	<td>Return a list of all columns of table available in database. This is very important system view that can be used to search columns.</td></tr>
+            <tr> <td>_v_aggregate			</td>	<td>Returns a list of all defined aggregates                                                                                           </td></tr>
+            <tr> <td>_v_synonym				</td>	<td>Returns a list of all synonyms in database                                                                                         </td></tr>
+            <tr> <td>_v_objects				</td>	<td>Lists the all objects like tables, view, functions                                                                                 </td></tr>
+            <tr> <td>_v_qrystat				</td>	<td>Returns a query status                                                                                                             </td></tr>
+            <tr> <td>_v_qryhist				</td>	<td>Returns query history                                                                                                              </td></tr>
+            <tr> <td>_v_database			</td>	<td>Returns a list of all databases                                                                                                    </td></tr>
+            <tr> <td>_v_datatype			</td>	<td>Returns a list of all system data types                                                                                            </td></tr>
+            <tr> <td>_v_function			</td>	<td>Returns a list of all defined functions                                                                                            </td></tr>
+            <tr> <td>_v_group				</td>	<td>Returns a list of all groups                                                                                                       </td></tr>
+            <tr> <td>_v_groupusers			</td>	<td>Returns a list of all users of a group                                                                                             </td></tr>
+            <tr> <td>_v_index				</td>	<td>Returns a list of all user indexes                                                                                                 </td></tr>
+            <tr> <td>_v_operator			</td>	<td>Returns a list of all defined operators                                                                                            </td></tr>
+            <tr> <td>_v_procedure			</td>	<td>Returns a list of all the stored procedures and their attributes                                                                   </td></tr>
+            <tr> <td>_v_relation_column		</td>	<td>Returns a list of all attributes of a relation, Constraints and other informations                                                 </td></tr>
+            <tr> <td>_v_relation_column_def	</td>	<td>Returns a list of all attributes of a relation that have defined defaults                                                          </td></tr>
+            <tr> <td>_v_sequence			</td>	<td>Returns a list of all defined sequences                                                                                            </td></tr>
+            <tr> <td>_v_session				</td>	<td>Returns a list of all active sessions                                                                                              </td></tr>
+            <tr> <td>_v_table				</td>	<td>Returns a list of all user tables                                                                                                  </td></tr>
+            <tr> <td>_v_table_dist_map		</td>	<td>Returns a list of all fields that are used to determine the table’s data distribution                                              </td></tr>
+            <tr> <td>_v_table_index			</td>	<td>Returns a list of all user table indexes                                                                                           </td></tr>
+            <tr> <td>_v_user				</td>	<td>Returns a list of all users                                                                                                        </td></tr>
+            <tr> <td>_v_usergroups			</td>	<td>Returns a list of all groups of which the user is a member                                                                         </td></tr>
+            <tr> <td>_v_view				</td>	<td>Returns a list of all user views                                                                                                   </td></tr>
+            <tr> <td>_v_load_status			</td>	<td>Display the information about the progress of loads that are running on the system                                                 </td></tr>
+        </table>
     </body>
 </html>
