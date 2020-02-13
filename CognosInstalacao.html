@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8">
+        <title>Cognos - Instalação - Analytics</title>
+        <meta name="description" content="Este é um site referênte à estudos sobre Analytics">
+    </head>
+    
+    <body>
+        <h1>Cognos - Instalação</h1>
+        <p>Neste artigo, será esinado os procedimentos para a instalação e configuração do <i>Cognos Analytics 11.0.13</i> em uma arquitetura distribuída entre os servidores de aplicação. Para isso, algumas requisições são exigidas do sistema em que a plataforma será instalada, sendo estes os requisitos para que o Cognos seja instalado com sucesso, aspectos como quantidade de memória, versões, sistema operacional e etc (caso queira uma visão mais aprofundada dessas exigências, visite o site da IBM para tais informações: <a href="http://www-01.ibm.com/support/docview.wss?uid=swg27047186"> http://www-01.ibm.com/support/docview.wss?uid=swg27047186</a>).</p>
+        <p>Os principais aspectos de sistema exigidos, são que o sistema operacional seja inteiramente Linux (Suse Linux de preferência), na versão <i>SUSE Linux Enterprise Server 12</i>, a qual é suportada para arquiteturas IBM Z e X86. Além disso, a versão do Java exigida é de 8.0 (porém, não há uma necessidade de sua instalação pelo usuário, uma vez que o instalador do Cognos já é constituído do Java).</p>
+        <ul>
+            <li><strong>Cuidados Adicionais</strong></li>
+                <p>Na versão 11.0 do Cognos, os srivers JDBC são copiados para o diretório: <i>diretorioInstalacao</i><strong>/drivers</strong>. Além disso, o diretório dos arquivos deverá ser alterado, onde em um ambiente distribuído deverá ser utilizado de um <strong>diretório de rede</strong>. Já em servidores de produção que se encontram em uso, o mapeamento NFS deve se ecbobtrar nos servidores de aplicação.</p>
+            <li><strong>Preparação do S.O.</strong></li>
+                <p>Primeiramente, deve ser criado um grupo com o nome, de preferência, cognos, através do comando:</p> 
+                <pre>
+            <strong>groupadd</strong> cognos
+                </pre>
+                <p>e criar-se um usuário com o nome, de preferência, svc_cognos e seta-lo no grupo criado anteriormente e por medidadas de segurança, alterar uma senha para o usuário criado, processos esses realizados pelos comandos:</p>
+                <pre>
+            <strong>useradd</strong> svc-cognos <strong>-m -g</strong> cognos.
+            
+            <strong>passwd</strong> svc-cognos
+                </pre>
+                <p>Além disso, alguns limites do sistema operacional devem ser respeitados devido a exigências da própria IBM, esses limites se encontram no link:  <a href="https://www.ibm.com/support/knowledgecenter/en/SSEP7J_11.0.0/com.ibm.swg.ba.cognos.inst_cr_winux.doc/c_inst_ulimitsettingsonunixandlinuxoperatingsystems.html "> https://www.ibm.com/support/knowledgecenter/en/SSEP7J_11.0.0/com.ibm.swg.ba.cognos.inst_cr_winux.doc/c_inst_ulimitsettingsonunixandlinuxoperatingsystems.html </a> e para que essas recomendações sejam aplicadas nos limites do sistema, será preciso alterar o arquivo <strong><i>/etc/security/limits.conf</i></strong> como na configuração abaixo:</p>
+                <pre>
+            #================================================ 
+
+            # ulimit -t (CPU time) 
+
+            *   soft    cpu   unlimited 
+
+            *   hard    cpu   unlimited 
+
+            # ulimit -f (File size) 
+
+            *   soft    fsize   unlimited 
+
+            *   hard   fsize   unlimited 
+
+            # ulimit -m (Maximum memory size) 
+
+            *   soft     rss       unlimited 
+
+            *   hard   rss   unlimited 
+
+            # ulimit -u (max user processes) 
+
+            *   soft      nproc     unlimited 
+
+            *   hard      nproc     unlimited 
+
+            # ulimit -n (open files) 
+
+            *   soft       nofile    65536 
+
+            *   hard       nofile    131072 
+
+            # ulimit -s (stack size) 
+
+            *   soft       stack     unlimited 
+
+            *   hard       stack     unlimited 
+
+            # ulimit -v (Virtual memory) 
+            
+            *   soft       as        unlimited 
+
+            *   hard       as        unlimited 
+            #================================================ 
+                </pre>
+            <p>Realizado os passos acima, será necessário reiniciar o sistema para que as variáveis alteradas sejam aplicadas as configurações. Após restaurar o sistema, por medidas de precauçã e boa prática, deverá ser preparada uma árvore de diretórios que irá ser constituída do binário de instalação do Cognos. Para isso, recomenda-se que seja realizado da seguinte forma e logo em seguida, tornar o binário como executável:</p>
+            <pre>
+        <strong>cd</strong> /
+        
+        <strong>mkdir -p</strong> /opt/CognosInstalacao
+        
+        <strong>chmod 775</strong> ca_srv_linuxi38664_11.0.13.18110610.bin
+            </pre>
+            <p>E logo em seguida, copiar o instalador do Cognos para o diretório definido no procedimento anterior. Além disso, será preciso criar um outro diretório que servirá de armazenameno dos binários do Cognos:</p>
+            <pre>
+        <strong>cd</strong> /
+        
+        <strong>mkdir</strong> /opt/ibm/cognos <strong>-p</strong>
+        
+        <strong>cd</strong> /opt
+        
+        <strong>chown</strong> svc-cognos:cognos ibm/ <strong>-R</strong>
+            </pre>
+            <li><strong>Instalação do Cognos</strong></li>
+                <p>O primeiro a ser feito, é recorrente ao <i><strong>Content Manager</strong></i>, sendo o responsável por armazenar as configurações globais, <i>data sources</i>, dados as aplicações, saídas dos relatórios, especificações e etc. O <i>Content Manager</i> precisa de um repositório, chamado <i>Content Store</i> e antes da utilização do Cognos, deverá ser extraído o script DDL de criação do banco de dados.</p>
+                <p>Após isso, é necessário que o diretório <strong>/home/svc-cognos</strong> ou o <strong>/tmp</strong> tenham um mínimo de 3,5Gb de espaço livre, caso contrário, o instalador dará erro no processo de instalação. Para isso, o profile do svc-cognos deverá ser editado e que seja adicionada a variável de ambiente, como a seguir:</p>
+                <pre>
+            IATEMPDIR=/dados/app/instalacao_temp 
+
+            <strong>export</strong> IATEMPDIR 
+                </pre>
+                <p>Realizado esse procedimento, adicionando a variável dentro do profile, deverá ser criado uma pasta dentro do diretório <i>/dados</i> com o usuário svc-cognos</p>
+                <pre>
+            <strong>mkdir</strong> instalacao_temp
+                </pre>
+                <p>Agora o processo de istalação poderá ser iniciado no diretório criado (/instalacao), executando o binário <i>ca_srv_linuxi38664_11.0.13.18110610.bin</i> e então a janela de instalação do Cognos será iniciada, sendo solicitada a linguagem que se deseja para o mesmo seguido dos termos de aceitação do contrato, devendo ser aceitos.</p>
+                <p>A janela seguinte, deverá ser indicado o local de instalação di Cognos e uma outra janela com a solicitação de confirmação será exibida. Como a primeira instalação a ser feita, é do <i>Content Manager, o diretório da instalação deverá ser: <strong><i>/opt/ibm/cognos/analytucs-cm</i></strong></i>. Logo em seguida, a opção de instalação será solicitada ao usuário, onde a primeira opção deverá ser escolhida e ao clicar em "avançar", na janela seguinte, a opção <strong>Repositório do Conteúdo</strong> deverá ser optada e então, o processo de instalação será iniciado.</p>
+        </ul>
+        <h3>Configurações</h3>
+        <ul>
+            <li><strong>Configuração do JAVA_HOME</strong></li>
+                <p>Deverá ser aberto o arquivo profile no <i>home</i> do usuário svc-cognos e adicionar a definicção da variável de ambiente JAVA_HOME, como nos andamentos seguintes:</p>
+                <pre>
+            <strong>su -</strong> svc-cognos
+            
+            JAVA_HOME=/opt/ibm/cognos/analytics-cm/jre 
+
+            <strong>export</strong> JAVA_HOM
+            
+        E com as seguintes configurações:
+        
+            <strong>vi</strong> .profile
+            
+            ODBCINI=/etc/unixODBC 
+
+            export ODBCINI 
+
+
+
+            ODBCINSTINI=/etc/unixODBC 
+
+            export ODBCINSTINI 
+
+
+
+            NZ_ODBC_INI_PATH=/etc/unixODBC 
+
+            export NZ_ODBC_INI_PATH 
+
+
+
+            ODBCHOME=/etc/unixODBC 
+
+            export ODBCHOME 
+
+
+
+            JAVA_HOME=/opt/ibm/cognos/analytics-cm/jre 
+
+            export JAVA_HOME 
+
+
+
+            LD_LIBRARY_PATH=/opt/ibm/cognos/analytics/bin64:/opt/ibm/cognos/analytics/bin:/opt/nz/lib:/usr/lib$LD_LIBRARY_PATH 
+
+
+
+            export LD_LIBRARY_PATH 
+
+
+
+            PATH=/opt/ibm/cognos/analytics/bin:/opt/ibm/cognos/analytics/bin64:/opt/nz/bin:/opt/nz/bin64:/usr/lib$PATH 
+
+
+
+            export PATH 
+                </pre>
+                <p>Por via das dúvidas, é indicado recarregar o profile do usuário e verificar se a variável apresenta o caminho especificado. Além disso, os drivers JDBC e a licença de cada uma das aplicações que serão usadas (neste caso, de DB2 e Neteza) deverão ser copiados para o diretório <strong>/opt/ibm/cognos/analytics-cm/drivers</strong>, assim como, as bibliotecas seguintes deverão ser instaladas da seguinte forma:</p>
+                <pre>
+            <strong>zypper install</strong> libX11-6-32bit 
+
+            <strong>zypper install</strong> unixODBC unixODBC-32bit 
+                </pre>
+                <p>Tendo a instalação do Cognos realizada com sucesso, deverá ser realizado o processo de configuração do <i>Content Store</i> criando o banco de dados Analytic, apontando para um banco de dados DB2LUW versão <i>DB2 Advanced Enterprise Server Edition</i>. Para obter o DDL para a criação do <i>Content Store</i>, será necessário abrir as configurações do Cognos via interface gráfoca e com o botão direito, clicar no ícone <i>Content Store</i> e selecionar a opção <strong><i>Generate DDL</i></strong>.</p>
+                <p>Seguem abaixo os comandos para a criação do database no servidor apontado pela equipe de DB2:</p>
+                <pre>
+            mkdir /db2/db2inst1/homol/data1/ANALYTIC  
+            mkdir /db2/db2inst1/homol/data1/ANALYTIC/dbpath  
+
+            mkdir /db2/db2inst1/homol/data2/ANALYTIC  
+
+            mkdir /db2/db2inst1/homol/data3/ANALYTIC  
+
+            db2 "create database ANALYTIC ON '/db2/db2inst1/homol/data1/ANALYTIC','/db2/db2inst1/homol/data2/ANALYTIC','/db2/db2inst1/homol/data3/ANALYTIC' DBPATH ON '/db2/db2inst1/homol/data1/ANALYTIC/dbpath' USING CODESET UTF-8 TERRITORY BR COLLATE USING UCA500R1_LEN_S1 pagesize 32768" 
+
+            db2 connect to  ANALYTIC  
+
+            db2 create bufferpool bf32k PAGESIZE 32k;  
+            db2 create tablespace TBS32K  PAGESIZE 32k bufferpool bf32k no file system caching;  
+            db2 create tablespace TBSIDX32 PAGESIZE 32k bufferpool bf32k no file system caching;  
+            db2 create tablespace TBS_LOB32K PAGESIZE 32k bufferpool bf32k no file system caching;  
+            db2 create user temporary tablespace tbssys32k PAGESIZE 32k bufferpool bf32k no file system caching;  
+
+            db2 create temporary tablespace TEMPSPACE PAGESIZE 32k bufferpool bf32k no file system caching;   
+                </pre>
+            <li><strong>Configuração do Content Manager</strong></li>
+                <p>Tendo o banco de dados do <i>Content Store</i> criado, poderá ser dado inicio à configuração do <i>Content Manager</i>. Para isso, o comando a seguir, deverá ser executado para abrir o painel de configuração, o <i>Cognos Configuration</i> com o usuário svc-cognos:</p>
+                <pre>
+            <strong>cd</strong> /opt/ibm/cognos/analytics/bin64 
+
+            ./cogconfig.sh 
+                </pre>
+                <p>Diante disso, ao abrir as configurações do Cognos, é preico ir na opção de <strong>Enviroment</strong> e modificar o diretório onde o <i>deployment, Data e Temporary</i> estão armazenados para <strong>/data</strong>. Na opção <strong>Configuration Group</strong>, deverão ser modificados o <i>Group Name e Group Contact Host</i> para: <strong>grupo_cogpluj e cogo120.sicoob.com.br</strong></p>
+                <p>Já na opção <strong>File</strong> deverá ser aumentada a quantidade de logs que o Cognosgera para uma obtenção de mais tempo de registro dos acontecimentos internos. Feito isso, com o botão direito, clique sobre a opção de <strong>Logging</strong>, seguido por <strong>New Resource e Destination</strong>, inserindo como nome <strong>Audit</strong> e type(Group) como <strong>Database</strong>.</p>
+                <p>No novo item criado com o nome de Audit, clique com o botão direito e vá na opção <strong>New Resource</strong> e em <strong>Database</strong> logo em seguida. Na nova janela que será aberta, o nome deverá ser tido como <strong>DB2 Audit Database</strong> e o type(Group) como <strong>DB2 Database</strong>. Ao finalizar a criação do novo recurso de banco de dados, everá ser preenchido os dados da conexão com o banco em questão, necessitando do servido e porta, ID e senha, o nome da base e o SSL. Além disso, no <strong>IBM Cognos</strong> o parâmetro de memória máxima do WLP deve ser alterado de acordo com os recursos da máquina em que a instalção está sendo feita.</p>
+                <p>Já no item <strong>Cognos</strong>, deve ser mudada a variável para <strong>false</strong>, para que ocorra um impedimento da realização de logins de forma anônima (sem que passe pela autenticação do AD). E na opção de <strong>Authentication</strong> deverão ser adicionados dois novos Namespaces responsáveis pela autenticação no AD, sendo eles <strong>Sicoob e Bancoob</strong> e configurá-los com o nome = Active Directory, Type(Group) = LDAP e Type = LDAP - General Default Values.</p>
+                <p>Realizado os procedimentos acima, além das configurações de Active Directory, Notification e Cryptography, deverão ser salvadas as configurações e iniciar a opção de <i>Start</i></p>
+            <li><strong>Configuração do Application Server e Gateway</strong></li>
+                <p>Os componentes do <i>Content Manager</i> gerenciam os metadados do Cognos e, portanto, é um componente da camada de dados e o servidor de aplicação é a parte responsável pela camada de aplicação. Com o mesmo binário para realizar a instalação do Content Manager, executá=lo no servidor onde será instalado o <i>Application Server</i>. Após finalizar o processo de instalção do servidor de aplicação, abrir o Cognos Configuration na pasta /bin64:</p>
+                <pre>
+            #cd /opt/ibm/cognos/analytics/bin64 
+
+            #./cogconfig.sh 
+                </pre>
+                <p>E após realizar a instalação, deverão ser aplicadas as configurações do mesmo através do Cognos, sendo elas o <strong>Enviroment</strong>, <strong>Configuration Group, File, Logging, Notification Store, Human Task</strong> e etc.</p>
+                <p>Já com o Gateway, é responsável por direcionar as conexões do Cognos entre os servidores de aplicações, atuando como um balanceador e também atuando como <i>single sign on</i>. Feita a instalação, para realizar as configurações, 2 arquivos devem ser editados: <strong>cognos.conf e httpd.conf</strong>. Esses arquivos possuem as configurações de como o Gateway irá responder e rotear para os servidores de aplicações. Para faciliar essa edição, comparar o arquivo existente na pasta apache com um Gateway que já se ecnontra instalado, irá ajudar.</p>
+                <p>Após realizar a edição desses arquivos, deverá ser executadp o seguinte comando como root e realizar, para realizar o <i>reload</i> do apache com as tais configurações:</p>
+                <pre>
+            <strong>systemctl reload</strong> apache2 
+                </pre>
+                <p>Após finalizar a edição dos arquivos, abrir o Cognos Configuration para adicionar os servidores de aplicação na lista de servidores disponíveis para roteamento e autenticação. Editar a variável Dispatcher URIs for Gateway e adicionar os servidores.</p>
+        </ul>
+    </body>
+</html>
