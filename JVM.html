@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8">
+        <title>JVM -  Analytics</title>
+        <meta name="description" content="Este é um site referênte à estudos sobre Analytics">
+    </head>
+    
+    <body>
+        <h1>JVM - Analytics</h1>
+        <p> A JVM é máquina virtual Java (<i>Java Virtual Machine</i>) criada com o objetivo de rodar aplicações Java em "todos" os tipos de serviços e sistemas através de uma máquina virtual. Essa <i>Virtual Machine</i> é um software que simula uma máquina física e consegue executar programas, gerênciar processos, arquivos e memória totalmente virtuais (não dependendo de hardwares). Ou seja, para aplicações Java, não é necessário que suas execuções sejam dadas pelo sistema operacional em que a aplicação se encontra, sendo então acionadas diretamente com a JVM, possibilitando assim a portabilidade de seu código.</p>
+        <p>Esse processo cria uma independência do sistema operacional, fornecendo ao desenvolvedor a liberdade de desenvolver para múltiplas plataformas, ou seja, a preocupação de compilar o script e em qual sistema (Linux/Windows/Mac) o mesmo será gerenciado e executado, fica a par da JVM. Além disso, é responsável pela execução das pilhas, gerenciamento de memória, <i>threads</i> e etc.</p>
+        <p>Resumindo, o funcionamento é bem simples, onde um código é escrito  em um arquivo <i>.java</i>, compilado e é gerado um arquivo <i>.class</i> conhecido como <strong>bytecode</strong> o ual é lido e interpretado pela JVM que posteriormente irá executa-lo. Dessa forma, um script feito no Linux e compilado no Linux pode ser executado em outros sistemas operacionais como o Windows e até mesmo em celulares, gerando assim a possibilidade de fazer uma aplicação Java rodar em qualquer sistema (multi-plataforma). Essa compilação do script para a geração do <i>bytecode</i> é realizado pelo <strong>JDK</strong>, o qual é kit de desenvolvimento Java responsável por esse processo de compilação.</p>
+        <p>Além disso, um programa não necessita se encontrar especificamente na linguagem Java para ser executado pela JVM. Outras linguagens que também gerem arquivos <i>bytecode</i> também podem rodar, como JRuby e Jython.</p>
+        <ul>
+            <li><strong>JRE - Ambiente de Execução Java</strong></li>
+                <p>O JRE provê os requisitos mínimos para executar um programa Java, contendo uma JVM e os pacotes básicos do Java. Ou seja, é o que fornece as bibliotecas padrões do Java para o JDK compilar e a JVM executar.</p>
+            <li><strong>JKD - Kit de Desenvolvimento Java</strong></li>
+                <p>Este é o kit que provê ferramentas para desenvolvimento de programas Java, o qual contêm um compilador e o próprio JRE para a execução dos programas. Ou seja, é o JKD que compila os códigos transformando-os em <i>bytecode</i>.</p>
+        </ul>
+        <p>Para um melhor entendimento, segue uma imagem abaixo que ilustra de forma simples como cada um dessas funcionalidades se compôem e se dependem:</p>
+        <img src="https://dicasdejava.com.br/images/jdk_jre_jvm.png">
+    </body>
+</html>
