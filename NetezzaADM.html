@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8">
+        <title>ADM - Netezza - Analytics</title>
+        <meta name="description" content="Este é um site referênte à estudos sobre Analytics">
+    </head>
+    
+    <body>
+        <h1>ADM - Netezza - Analytics</h1>
+        <ol>
+            <strong><li>Visão geral da Adm.</li></strong>
+                <p>As tarefas de administração do Netezza se dividem em 2 categorias, sendo elas:</p>
+                <ul>
+                    <li><strong>System Administration</strong> - Gerenciamento do hardware, configurações de sistema, status do sistema, acessos, discos e outras tarefas.</li>
+                    <li><strong>Database Administration</strong> - Gerenciamento dos usuários das bases e seu conteúdo, como carregamento e manipulação de dados, consultas, restores de dados e controle de acessos/permissões aos dados e a quem os acessa.</li>
+                    </ul>
+                    <p>Em alguns ambientes, uma pessoa pode possuir ambas formas de administração, tanto de sistema como de databases, para o gerenciamento de todo o ambiente e suas tarefas. Em outros ambientes, várias pessoas podem compartilhar dessas responsabilidades, ou a separação específica em equipes para cada forma de administração. Além dessas permissões gerais, um usuário também pode possuir as permissões de database, a qual define como um usuário poderá se comportar diante de um banco de dados e suas tabelas, como permissões de criação de tabelas/bases, inserção/deleção de registros e etc.</p>
+                    <p>De forma geral, as tarefas de administração se ocupam nas seguintes categorias:</p>
+                    <ul>
+                        <li>Instalação dos clients do Netezza</li>
+                        <li>Gerenciamento do Appliance do Netezza</li>
+                        <li>Gerenciamento de notigficações/eventos de sistema</li>
+                        <li>Gerenciamento dos usuários e grupos</li>
+                        <li>Gerenciamento das databases</li>
+                        <li>Carregamento de dados</li>
+                        <li>Backup e restores de bases/dados</li>
+                        <li>Histórico de querys (logs)</li>
+                    </ul>
+            <strong><li>Usando a interface de administração do Netezza</li></strong>
+                <p>Esta etapa irá proporcionar um alto nível de descriçãao para a administração do Netezza através de interface e linhas de comando também ,assim como NzAdmin, Interface de administração web e comandos SQL para o Netezza. Além de descrever como realizar o acesso e usar dessa interface. Há a possibilidade de realizar as tarefas de gerenciamento do Netezza via linha de comando, para a a gerência do software/hardware e das bases usadas. Esses comandos são chamados de <strong>*nz commands</strong> </p>
+                <p>A tabela a seguir, irá descrever os comandos *nz que podem ser usados para monitorar e gerenciar um sistema Netezza. Esses comandos residem no diretório <strong>/nz/kit/bin</strong> do Host do Netezza. Muitos desses comandos são geridos junto a instação do kit <i>client Netezza</i> e podem rodar de forma remota no ambiente.</p>
+                <table border=5 width="">
+                <tr colspan="" bgcolor="white">
+                    <th>Comando</th>  
+                    <th>Descrição</th>
+                </tr>
+                    <tr><td>nzbackup</td>           <td>Realização de backup em uma base X</td></tr>
+                    <tr><td>nzcontents</td>         <td>Exibe a revisão e construir o número de todos os executáveis, além de a soma de verificação de Binários Netezza.</td></tr>
+                    <tr><td>nzconvert</td>          <td>Converts character encodings for loading with the nzload command or external tables.</td></tr>
+                    <tr><td>nzds</td>               <td>Manages and displays information about the data slices on the system. </td></tr>
+                    <tr><td>nzevent</td>			 <td>Displays and manages event rules</td></tr>    
+                    <tr><td>nzhistcleanupdb</td>	 <td>Deletes old history information from a history database. This command resides in /nz/kit/bin/adm.</td></tr>
+                    <tr><td>nzhistcreatedb</td>	 <td>Creates a history database with all its tables, views, and objects for history collection and reporting. This command resides in /nz/kit/bin/adm.</td></tr>
+                    <tr><td>nzhostbackup</td>		 <td>Backs up the host information, including users and groups.</td></tr>
+                    <tr><td>nzhostrestore</td>		 <td>Restores the host information.</td></tr>
+                    <tr><td>nzload</td>			 <td>Loads data into database files. </td></tr>
+                    <tr><td>nzodbcsql</td>			 <td>A client command on Netezza UNIX clients that tests ODBC connectivity.</td></tr>
+                    <tr><td>nzpassword</td>		 <td>Stores a local copy of the user’s password.</td></tr>
+                    <tr><td>nzreclaim</td>			 <td>Uses the SQL GROOM TABLE command to reclaim disk space from user tables, and also to reorganize the tables.</td></tr>
+                    <tr><td>nzrestore</td>			 <td>Restores the contents of a database backup.</td></tr>
+                    <tr><td>nzrev</td>				 <td>Displays the current software revision for any Netezza software release. </td></tr>
+                    <tr><td>nzsession</td>			 <td>Shows a list of current system sessions (load, client, and sql). Supports filtering by session type or user, allows you to abort sessions, and change the current job list for a queued session job. </td></tr>
+                    <tr><td>nzspupart</td>			 <td>Shows a list of all the SPU partitions and the disks that support them; controls regenerations for degraded partitions.</td></tr>
+                    <tr><td>nzsql</td>				 <td>Invokes the SQL command interpreter. </td></tr>
+                    <tr><td>nzstart</td>			 <td>Starts the system. </td></tr>
+                    <tr><td>nzstate</td>			 <td>Displays the current system state or waits for a specific system state to occur before returning. </td></tr>
+                    <tr><td>nzstats</td>			 <td>Displays system level statistics. </td></tr>
+                    <tr><td>nzstop</td>			 <td>Stops the system.</td></tr>
+                    <tr><td>nzsystem</td>			 <td>Changes the system state or displays the current system information. </td></tr>
+                </table>
+                <p>Além disso, os comandos CLI  pssuem as opções de sintaxe top-level do linux atribuidas, como o <strong>-h/-rev/-hc</strong>.</p>
+                <p>Para rodar um comando *nz, será necessário que o usuáro tenha acesso ao <i>Netezza system</i> ou a instalação do kit do Netezza client na máquina/servidor. Enquanto alguns comandos podem operar e exibir informações sem os acessos requeridos, outro comandos e operações requerem que seja especificado o usuário e senha da base em questão.</p>
+            <strong><li>Startando o NzAdmin</li></strong>
+                <p>Este funciona como um gerenciador de administração de um servidor do Netezza, possuindo uma interface gráfica dinâmica que exibe informações de todo um servidor, desde suas configurações e disponibilidade até suas databases/tabelas e usuários que se encontram. Para que se tenha acesso, é necessário o <strong>host</strong> da máquina que está inserido e dos dados de <strong>usuário/senha</strong>. Após o log in ser efetuado, a interface será aberta com a página dos dados gerais do servidor. Perceba que há duas possíveis janelas sendo: <strong>system</strong> (Informações do servidor em sí) e <strong>Database</strong> (Informações das bases e tabelas presentes no servidor em questão).</p>
+                <p>Como dito anteriormente, a primeira janela a ser exibida é a de  <i>system</i> das informações do servidor, em seu lado direito é possível ver os dados gerais do servidor e no lado esquerdo a arvore de informações. Neste lado direito, é exibido uma visão geral do hardware, com imagem do sistema Netezza que podem conter 1 ou mais racks do applience. Estas imagens são interativas, logo ao posicionar o mouse sobre o servidor, são exibidas informações como ID do hardware e outros detalhes. Ao clicar na imagem do servidor, o usuário é redirecionado para uma página com mais informações detalhadas sobre aquele em questão (Além disso, no canto inferior direito, é possível ver o usuário que abriu esta sessão e o tempo de duração desde a abertura).</p>
+                <p>Perceba que o status geral dos componentes são baseados em <strong>cores</strong>, as quais possuem uma descrição no próprio exibidor da interface. Essas cores indicam o status do um componente X (na primeira janela por exemplo, são exibidos os status do servidor). Na parte superior da interface, se encontra o <strong>menu de execuções</strong> do ambiente, possibilitando a execução de comandos via interface gráfica, como criação de base/tabela e etc, onde:</p>
+                <ul>
+                    <li><strong>File > New 								</strong> - Allows you to create a database, table, view, materialized view, sequence, synonym, user or group. Available only in Database tab.                                                                                               </li><br>
+                    <li><strong>File > System 							</strong> - State Allows you to change the system state.                                                                                                                                                                                     </li><br>
+                    <li><strong>File > Reconnect 						</strong> - Reconnects to the Netezza system with a different hostname, address or user name.                                                                                                                                                </li><br>
+                    <li><strong>File > Exit 							</strong> - Exits the application.                                                                                                                                                                                                           </li><br>
+                    <li><strong>View > Toolbar 							</strong> - Shows/hides the application toolbar.                                                                                                                                                                                             </li><br>
+                    <li><strong>View > Status 							</strong> - Bar Shows/hides the status bar.                                                                                                                                                                                                  </li><br>
+                    <li><strong>View > System 							</strong> - Objects Shows/hides system tables and views and applies to object privilege lists in the Object Privileges window.                                                                                                               </li><br>
+                    <li><strong>View > SQL 								</strong> - Statements Displays the SQL Window that shows a subset of the SQL commands NzAdmin has used in this session.                                                                                                                     </li><br>
+                    <li><strong>View > Refresh 							</strong> - F5 Refreshes the entire view — What is refreshed depends on whether you are viewing the System or Database section of the NzAdmin tool.                                                                                          </li><br>
+                    <li><strong>Tools > Workload Management				</strong> - Performance — Displays Summary, History, and Graph Workload Management information.                                                                                                                                              </li><br>
+                    <li><strong>										</strong> - Settings — Displays the System Defaults that you can use to set the limits on session timeout, row set, query timeout, and session priority and the Resource Allocation that you can use to specify resource usage among groups. </li> <br>
+                    <li><strong>Tools > Table Skew 						</strong> - Table Skew — Displays any tables that meet or exceed a specified skew threshold.                                                                                                                                                 </li><br>
+                    <li><strong>Tools > Table Storage					</strong> - Table Storage — Displays table and materialized view storage usage by database or by user.                                                                                                                                       </li><br>
+                    <li><strong>Tools > Query History Configuration 	</strong> - Query History Configuration — Displays a window that you can use to create and alter query history configurations, as well as to set the current configuration.                                                                  </li><br>
+                    <li><strong>Tools > Default Settings 				</strong> - Default Settings — Displays the materialized view refresh threshold.                                                                                                                                                             </li><br>
+                    <li><strong>Tools > Options 						</strong> - Preferences — Displays the Preferences dialog box that you can use to set the object naming preference and whether you want auto refresh.                                                                                        </li><br>
+                    <li><strong>Help > NzAdmin Help 					</strong> - Displays the online help for the NzAdmin tool.                                                                                                                                                                                   </li><br>
+                    <li><strong>Help > About NzAdmin 					</strong> - Displays the NzAdmin and Netezza revision numbers and copyright text.                                                                                                                                                            </li><br>
+                </ul>
+            <hr>
+            <h3>System Window</h3>
+            <p>Aqui serão exibidas as informações do hardware em sí, mostrando o andamento do servidor em questão e seus discos, assim como o status das SPU's e <i>Data Slices</i>.</p>
+            <ol>
+                <strong><li>Página inicial - Informações gerais do servidor</li></strong>
+                    <p>Nesta primeira janela em que o usuário se encontra, são exibidas os dados gerais do servidor em questão, sendo possível ver uma <strong>imagem</strong> do servidor (ao passar o mouse, é possível exibir a quantidade de racks e a ID do servidor). Além disso, é exibido também, o estado em que o banco de dados do servidor se encontra (<strong>database status</strong>) através de uma <strong>cor</strong> (a qual possui legenda ao lado), indicando se está OK, em estado crítico ou necessitando de atenção.</p>
+                    <p>Outras informações que são mostradas nesta janela, é o estado do sistema <strong>(system state)</strong>, que define se o servidor se encontra fora ou não do ar. Assim como a Autenticação do serviço <strong>(Authentication)</strong>, a qual mostra se é um serviço LOCAL ou REMOTE. Logo abaixo, um gráfico do armazenamento do disco é mostrado ao usuário (<strong>system disk status</strong>), sendo um gráfico pizza, com dados do armazenamento total no disco, quantidade de armazenamento usado e disponível também.</p>
+                <strong><li>Segunda Janela - Informações específicas do servidor</li></strong>
+                    <p>Para alcançar esta segunda página, basta que o usuário clique na imagem do servidor exibida na primeira janela (As imagens do NzAdm são interativas), redirecionando o suário para a página <strong>SPA ID</strong>. Nela, são exibidas informações mais claras do servidor, começando por uma imagem mais clara do mesmo (<strong>front view</strong>) que exibe o status de cada disco presente no servidor (seguindo o mesmo conceito de cores citado anteriormente). Cada disco se encontra em uma SPU do servidor, essa SPU são compostas por FPGA's, CPU e memória associadas a quantidade N de discos de armazenamento no servidor. Portanto, assim como o status de cada disco, também é possível ver o status da(as) SPU's usadas pelo servidor, logo abaixo.</p>
+                    <p>Nas informações do disco (sendo exibidas ao posicionar o mouse sobre o mesmo) se referem a: <i>ID, Serial Number</i> e <i>Enclosure ID</i>(Gabiente) de cada disco. Além disso, ao clicar sobre um disco X, no canto mais a direita são exibidas suas informações de forma mais detalhada, como o tipo do disco, sua IP, modelo e etc (por <i>default</i> são exibidas neste lado, as informações de todos os discos sem especificação, sendo alterado apenas quando um disco específico é selecionado).</p>
+                    <p>O mesmo acontece com as SPU's do servidor, onde suas informações gerais são de: <i>ID, SPA ID</i>(servidor), <i>Serial Number</i> e <i>IP Address</i>. Assim como ao clicar sobre um SPU, suas informações detalhadas são exibidas no canto direito.</p>
+                    <p>Por fim, mais abaixo, é possível ver informações mais básicas, como o status do servidor (<strong>SPA status</strong>), Hardware ID, quantidade de racks e discos <i>spare</i> (discos em standby que serão usados como metidas de prevenção de risco, em caso de um disco X falhar, um <i>spare disk</i> é usado no lugar).</p>
+                <strong><li>Terceira Janela - Informações das SPU's</li></strong>
+                    <p>Nesta terceira janela (janela dentro da SPA ID), são dadas as informações detalhadas de cada SPU do servidor (<strong>SPU Slot</strong>). Esses dados na parte superior (<strong>SPU Status/SPU Detail</strong>) são exatamente sobre a SPU em questão, mostrando a sua ID, status, SPA que se ecnontra, versão e etc. Logo abaixo, são exibidas as informações dos <strong>Data Slices</strong>, que mostram o status, partição, tamanho, discos suportados e etc.</p>
+                    <p>Esses <i>Data Slices</i> são administrados pelas SPU's em questão de performance.</p>
+                <strong><li>Quarta Janela - Informações gerais das SPU's</li></strong>
+                    <p>Nesta janela <strong>SPU Units</strong> são exibidas as informações gerais das SPU's presentes no servidor, como seu status, rack em que se encontra, IP e etc.</p>
+                <strong><li>Quinta Janela - Data Slices</li></strong>
+                    <p>Aqui são mostradas as informações específicas de todos os <i>Data Slices</i> presentes no servidor, as quais são exibidas extamanete da mesma forma na janela de informações das SPU's, que como dito anteriormente, são as SPU's que administram o funcionamento desses <i>Data Slices</i> em cada base.</p>
+                    <p>Os <i>Data Slices</i> funcionam como um "quebrador" de dados, onde de uma explicação geral, um dado é todo quebrado/fragmentado em várias partes visando a performance do Netezza para sua exibição, esse dado será jogado suas partes em cada disco e trabalhado. Para isso os <i>Data Slices</i>, que funcionam como o triturador dessesdados, aumentando a performance do Netezza.</p>
+            </ol>
+            <h3>Database Window</h3>
+            <p>Nesta janela, serão exibidas as informações de cada banco de dados existente no servidor, assim como as informações das tabelas, usuários e etc. Através desta janela, é possível monitorar todo o servidor em questão (dependendo das permissões concedidas ao usuário), além de que também é possível ver o andamento de cada base e até mesmo, cada sessão aberta no servidor, como seu usuário, a base que está acessando, horário de acesso e até mesmo o comando gerado pela sessão em uma base X.</p>
+            <p>De certa forma, é nesta janela que está a principal monitoração das bases do Netezza, onde um DBA por exemplo, poderá definir todas as regras e visualizar o andamento de todo o servidor Netezza. Além disso, é possível ver informações do histórico de backup de todo o servidor e também o histórico de restore's realizados no mesmo.</p>
+            <strong><li>Gerenciando um servidor Netezza</li></strong>
+                <p>Aqui serão descritas as maneiras de gerenciar os servidores e processos do Netezza, além do impacto gerado durante ações de <i>started</i> e <i>stopped</i> nas tarefas do Appliance. Outras informações que serão listadas neste capitulo, são sobre o comportamento dos chamados <strong>arquivos de log</strong>, onde encontra-los  e mensagens de erro de <i>troubleshooting</i>. Diante disso, começaremos com a explicação e orientação dos estados do sistema <strong>(system state)</strong>.</p>
+                <ul>
+                    <li><strong>System State</strong></li>
+                        <p>O estado sistema Netezza se refere ao atual estado em que o appliance se encontra, onde normalmente se encontra <strong>online</strong> e operando normalmente. Porém, ebventualmente, esse serviço necessita ser parado (<strong>stopped</strong>) para algumas medidas/ações (como atualização, manutenção, necessidade, prevenção e etc). É possível gerenciar esses estado do sistema, através  do comando <strng>nzstate</strng>, em que será exibida as informações gerais sobre o stado atual do sistema. Diante disso, os estados possíveis do sistema podem se encontrar em:</p>
+                        <ul>
+                            <li><strong>Online</strong> - Estado em que o Netezza se encontra totoalmente operacional (sendo o mais comum dos estados), onde o sustema se encontra pronto para processar queries. O sistema entra nete estado quando o Netezza é iniciado de algum modo (seja ele restardado ou não).</li>
+                            <br>
+                            <li><strong>Offline</strong> - Estado em que o Netezza é interrompido, ainda conseguindo continuar a execução de queries já iniciadas e gerando erro para novas consultas. Sendo realizado após um comando de <strong>nzsystem offline</strong> e voltando à <i>online</i> através de comandos <strong>nzsystem resume/stop</strong>.</li>
+                            <br>
+                            <li><strong>Paused</strong> - Estado em que o sistema se encontra em uma breve interrupção do servidor, onde o sistema continua a executar tarefas que já foram iniciadas, porém recusa qualquer outra que seja solicitada. Para isso, é ncessário o comando de <strong>nzsystem pause</strong> e retornando ao normal através do comando <strong>nzsystem resume/stop</strong>.</li>
+                            <br>
+                            <li><strong>Down</strong> - Estado em que o sistema se encontra caso haja uma insuficiência por parte do hardware para as funções do mesmo (conseguindo informações através do comando <strong>nzstate -reason</strong>). Para o retorno de seu funcionamento, são necessárias reparações nos hardwares e em seguida o comando <strong>nzsystem resume</strong>.</li>
+                            <br>
+                            <li><strong>Stopped</strong> - Estado em que o o sistema se encontra para medidas de tarefas necessárias (onde para suas execuções, o Netezza não pode estar no ar), como a instalação de um novo software. Sendo exigido através do comando <strong>nzsystem stop</strong> e retornando ao ar através do comando <strong>nzstart</strong></li>
+                            <br>
+                            <p>Perceba que durante os comandos do usuário de <strong>nzsystem stop/pause/offline/restart</strong> são executados, o sistema permite a continuação e espera finalizar queries que já se encontram rodando terminar, para então realizar a parada geral do sistema (a não ser que seja dado junto ao comando, a instrução de <strong>-now</strong>, que irá parar o sistema imediatamente e irá ignorar as tarefas, mesmo que ainda não terminadas).</p>
+                        </ul>
+                        <p>Quando o software do Netezza está rodando (esta no ar), o sistema e as SPU's podem fazer a transição pelos seguintes estados transacionais: de <strong>curta duração</strong> (estados terminados em "ing", como <i>Pausing, Discovering</i>) e os estados de longa duração, onde o sistema transita sobre estes estados em casos de ações forçadas ou de mudança. Todos esses estado serão descritos a seguir:</p>
+                        <table border=5 width="">
+                <tr colspan="" bgcolor="white">
+                    <th>Estado</th>  
+                    <th>Descrição</th>
+                </tr>
+                    <tr><td>Down</td>           <td>The system has not been configured (there is no configuration information for the data slices to SPU topology) or there is not enough working hardware to operate the system even in failover. The SPUs can never be in this state.</td></tr>
+                    <tr><td>Discovered</td>         <td>The SPUs and other components are discovered, but the system is waiting for all components to complete start-up before transitioning to the initializing state. </td></tr>
+                    <tr><td>Discovering</td>          <td>The system manager is in the process of discovering all the system components that it manages. </td></tr>
+                    <tr><td>Going Offline</td>               <td>The system is in an interim state going to offline.</td></tr>
+                    <tr><td>Going Offline (Now)</td>			 <td>The system is in an interim state going to offline now</td></tr>    
+                    <tr><td>Going Pre-Online </td>	 <td>The system is in an interim state, going to pre-online.</td></tr>
+                    <tr><td>Initialized</td>	 <td>The system uses this state during the initial startup sequence.</td></tr>
+                    <tr><td>Initializing</td>		 <td>The system is initializing. You cannot execute queries or transactions in this state</td></tr>
+                    <tr><td>Missing</td>		 <td>The system manager has detected a new, unknown SPU in a slot that was previously occupied but not deleted.</td></tr>
+                    <tr><td>Offline (Now) </td>			 <td>This state is similar to offline, except that the system stops user jobs immediately during the transition to offline.</td></tr>
+                    <tr><td>Online</td>			 <td>The system is running normally. It can service requests</td></tr>
+                    <tr><td>Paused</td>		 <td>The system is paused. You cannot run user jobs.</td></tr>
+                    <tr><td>Paused (Now)</td>			 <td>This state is similar to paused, except that the system stops user jobs immediately during the transition to paused.</td></tr>
+                    <tr><td>Pausing</td>			 <td>The system is transitioning from online to paused. During this state no new queries or transactions are queued, although the system allows current transactions to complete, unless you have specified the nzsystem pause -now command.</td></tr>
+                    <tr><td>nzrev</td>				 <td>Displays the current software revision for any Netezza software release. </td></tr>
+                    <tr><td>Pausing Now </td>			 <td>The system is attempting to pause due to a hardware failure, or the administrator entered the nzsystem pause -now command.</td></tr>
+                    <tr><td>Pre-Online</td>			 <td>The system has completed initialization. The system goes to the resume state.</td></tr>
+                    <tr><td>Resuming</td>				 <td>The system is waiting for all its components (SPUs, SFIs, and host processes) to reach the online state before changing the system state to online</td></tr>
+                    <tr><td>Stopped</td>			 <td>The system is not running. Note that commands assume this state when they attempt to connect to a system and get no response. The SPUs can never be in this state</td></tr>
+                    <tr><td>Stopped (Now) </td>			 <td>This state is similar to stopped, except that the system stops user jobs immediately during the transition to stopped.</td></tr>
+                    <tr><td>Stopping</td>			 <td>The system is transitioning from online to stopped.</td></tr>
+                    <tr><td>Stopping Now</td>			 <td>The system is attempting to stop, or the administrator entered the nzsystem stop -now command.</td></tr>
+                    <tr><td>Unreachable</td>			 <td>The system manager cannot communicate with the SPU because it has failed or it has been physically removed from the system</td></tr>
+                </table>
+                    <br>
+                    <strong><li>Gerenciamento o System State</li></strong>
+                        <p>É possível dar os comandos de <strong>nzstart/nzstop</strong> respectivamente parar iniciar/parar as operações do Netezza. Através do <strong>nzsystem</strong>  são fornecidas opções adicionais de alteração de estado, como restartar o sistema e etc. Ao dar um comando de <i>stop/start</i> nas operações do Netezza, os <i>storage groups</i> continuam a executar, assim como tarefas de verificação de mídia e integridade. Porém, entenda que para que os comandos de mudança de estados sejam realizados e executados pelo sistema, é necessária a <strong>permissão de usuário</strong> a quem esteja dando o comando.</p>
+                        <ul>
+                            <li>Estartando o sistema</li>
+                                <p>Ao iniciar um sistema Netezza, é acionado ao sistema e aos processos de databases que estejam online, fazendo com que todo o sistema esteja pronto para rodar queries e outras taregfas. Este estado pode ser iniciado a partir do comando <strong>nzstart</strong> , invocando um <i>startup</i> ao servidor, onde mensagens de verificação ou erro podem ser geradas em casos de congigurações mal feitas ou algo do tipo.</p>
+                                <p>Tal comando só pode ser executado quando o host for logado ao usuário, não sendo possível executa-lo remotamente de sistemas client do Netezza.</p>
+                            <li>Parando o sistema</li>
+                                <p>Ao parar um sistema Netezza, tanto os processos de database como serviços de backup, queries e etc, são parados e não serão iniciados enquanto o estado permanecer. Normalmente, só é dado um comando de <i>stop</i> no servidor quando realmente necessário, como casos de administração específica, ou para a paragem crítica de uma tarefa. Parando o sistema, todo os processos do Netezza serão parados, aguardando aqueles que já foram iniciados, terminarem suas execuções.</p>
+                            <li>Pausando o sistema</li>
+                                <p>Certas tarefas, como backup de host, exigem que o sistema esteja pausado para sua execução. Ao pausar, o sistema enfileira as tarefas que seriam executadas em ordem de chamada ou prioridade, para posteriormente (ao ser retomado) executa-las devidamente. Por default, o sistema finaliza as queries e transações que já foram ativas até a sua retomação. Ao ser dado o comando <strong>nzsystem pause</strong>, uma pergunta de certeza é exibida ao usuário, necessitando responde-la para a sequência do procedimento.</p>
+                            <li>Retornando o sistema</li>
+                                <p>Este é o comando dado após a pausa do Netezza, fazendo com que o sistema saia de estado atual para retornar ao ar. o realizar isso, automaticamente todos os processos e transações serão retomados a suas execuções e continuaram (em alguns casos, há a chance de o sistema restartar uma tarefa, iniciando-a novamente).</p>
+                            <li>Tornando o sistema offline</li>
+                                <p>Tornar o sistema fora do ar, fará com que nenhuma transação ou tarefa seja iniciada eventualemnte, permitindo apenas que tarefas de gerenciamento continuem rodando, concluindo todas as transações e queries que já foram estartadas. Como na pausagem, é solicitada uma certeza de que o usuário realmente deseja realizar tal ação.</p>
+                        </ul>
+                    <li><strong>System Erros</strong></li>
+                        <p>Durante a mudança de estado, ou até mesmo durante o processo de <i>start</i> do sistema, há a possível chance de erros serem emitidos ao sistema, sendo eles:</p>
+                        <ul>
+                            <li><strong>User error</strong> - Erro por parte do usuário, com um comando incorreto, como usuário inválido ou comando escrito errado</li>
+                            <br>
+                            <li><strong>Component failure</strong> - Falha direta com algum componente do hardware ou software do sistema. </li>
+                            <br>
+                            <li><strong>Environment failure</strong> - Erro devido a recursos ou problemas de acesso, como buffer cheio ou algo do tipo.</li>
+                            <br>
+                            <li><strong>Recoverable internal error</strong> - Erro de programação interna, não tão severo para abortar um programa.</li>
+                            <br>
+                            <li><strong>Nonrecoverable internal error</strong> - Erro de programação interna, sendo severo o suficente para abortar um programa.</li>
+                        </ul>
+                        <br>
+                    <li><strong>System Logs</strong></li>
+                        <p>Todos os principais componentes de software que rodam no host, são associados aos chamados registros de logs, ou arquivos de log, ou seja, é onde serão registradas as ações realizadas no servidor Netezza em questão, estando salvos todas as execuções. Os quais possuem características, como:</p>
+                        <ul>
+                            <li>Cada log consiste em arquivos armazenados em um diretório específico. Para os gerenciadores, é dado um log por gerencia e para os servidores, sendo um log por sessão. Esses logs possuem uma ID e data/hora de emissão como identificador.</li>
+                            <br>
+                            <li>Para todos os componentes do Netezza, o sistema cria um novo log a meia-noite se o mesmo estiver em constante atividade.</li>
+                            <br>
+                            <li>A cada 30 dias, o sistema remove todos os logs naõ acessados que estejam datados neste mesmo período.</li>
+                            <br>
+                        </ul>
+                        <p>A partir desses logs, é possível a realização de <strong>backups e restores</strong> do servidor (através dos comandos <strong>nzbakcup/nzrestore</strong>), onde os registrodos contidos nesses logs serão restaurados em um servidor X a partir de sua data de emissão. Além disso, essas realizações também irão gerar logs para registro, sendo armazenado o dia da execução, o tempo e outros dados da restauração ou backup.</p>
+                </ul>
+        </ol>
+    </body>
+</html>
