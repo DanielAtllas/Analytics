@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8">
+        <title>Groom - Netezza - Analytics</title>
+        <meta name="description" content="Este é um site referênte à estudos sobre Analytics">
+    </head>
+    
+    <body>
+        <h1>Groom Command - Netezza</h1>
+        <p>O comando de <i>GROOM TABLE</i>, ou limpeza, é realizado com o objetivo de manter as aplicações realizadas nas execuções de <i>DELETE</i> em uma tabela, fazendo com que o espaço obtido nessas deleções, se tornem atualizados ao ambiente. Este comando também possui a capacidade de realizar uma <strong>reorganização</strong> nas tabelas definidas e suas chaves de colunas. Ou seja, é um comando de <strong>atualização do sistema/ambiente realizado após as execuções de <i>DELETE</i> em uma tabela, visando atualizar o espaço obtido em disco, durante o drop das linhas/tabelas</strong>. Durante a execução do <i>grooming</i> nas tabelas, a base em questão ainda se torna acessível aos comandos de DML, ou seja, permitindo usuários a realização de manipulação dos dados por comandos de <i>SELECT, UPDATE, DELETE e INSERT</i>. As operações de consulta (<i>SELECT</i>) rodam de forma paralela aos comando de <i>grooming</i> e as demais (<i>UPDATE, DELETE e INSERT</i>), executadas entre os passos do <i>groom</i>.</p>
+        <p>Para isso, é realizado o comando:</p>
+        <pre>
+    <strong>groom table</strong> <i>tabela modo</i>
+        </pre>
+        <ul>
+            <li><strong>Modo</strong></li>
+                <p>Este parâmetro de "modo" como será executado o <i>groom</i> é passado durante o seu comando para execução, o qual definirá no que será aplicado a comando de <i>groom</i>. Esses modos se dividem em:</p>
+                <ul>
+                    <li><strong>Records Ready</strong> - Recuperação e reorganização dos registros/dados na tabela que não sofreram um <i>groomed</i> ou marcadas para isso. Usado como default nos tabelas de cluster.</li>
+                    <br>
+                    <li><strong>Records All</strong> - Recuperação e reorganização de todos os registros/dados na tebela em questão.</li>
+                    <br>
+                    <li><strong>Pages All</strong> - Identificação e marcação das páginas de dados como "vazias", as quais não possuem registros visíveis para liberação de disco.</li>
+                    <br>
+                    <li><strong>Pages Start</strong> - Identificação e marcação das principais páginas de dados como "vazias", que não possuem registros visíveis, realizando um "stop" caso encontre uma página de dado não vazia.</li>
+                    <br>
+                    <li><strong>Versions</strong> - Migração de registros de versões anteriores da tabela. Colunas dropadas não serão exibidas e colunas adicionadas exibirão valores default.</li>
+                </ul>
+        </ul>
+        <p>Há também a possibilidade de execução de um <i>grooming</i> usando do <strong>SQL Development Tool for Netezza</strong>, o <strong>Aginity</strong>. Uma interface gráfica para comandos de NZSQL diretamente nas bases Netezza, sem que seja necessária as instruções via linha de comando. Para isso, basta seguir os seguintes passos:</p>
+        <ol>
+            <li>Selecionar a opção de <strong>Groom Database</strong> na janela superior: Objects -> Database -> Groom Database</li>
+            <img src="https://dwgeek.com/wp-content/uploads/2016/07/Groom-Database-Aginity.jpg">
+            <br>
+            <li>Selecionar as tabelas que sofrerão a execução do <i>groom</i> e em seguida, selecionar a opçãode <strong>Start</strong> para a execução</li>,
+            <img src="https://dwgeek.com/wp-content/uploads/2016/07/Groom-Aginity.jpg">
+            <br>
+            
+        </ol>
+    </body>
+</html>
