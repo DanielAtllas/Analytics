@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8">
+        <title>WLM - Netezza - Analytics</title>
+        <meta name="description" content="Este é um site referênte à estudos sobre Analytics">
+    </head>
+    
+    <body>
+        <h1>Workload Management - Netezza</h1>
+        <p>O workload do sistema Netezza, consiste em gerenciar tarefas iniciadas pelo usuário, como consultas SQL, atarefas, backups, carga de dados e taeefas iniciadas pelo sistema, como rollbacks. O Workload Management, ou WLM, é o processo de avaliar a carga de trabalho de um sistema e alocar recursos usados para processar essa carga de trabalho. Um sistema Netezza, tam a principal função de executar suas tarefas de forma mais rápida possível, tendo uma maior capacidade de processamento, onde mesmo que apenas 1 tarefa eseja ativa no sistema, o mesmo irá dedicar todos os seus recursos para a conclusão da tarefa em questão. O mesmo acontece nos casos em que N tarefas estão sendo executadas no sistema, onde ocorrerá ma divisão dos recursos entre essas tarefas visando a execução imediata de cada uma (a menos que entre essas tarefas, algumas possuam uma certa prioridade de recusos, fazendo com que o sistema adote meditas prioritárias a tarefa em questão).</p>
+        <p>Essa forma de alocação de recursos é chamada de <strong><i>fair-sharing model</i></strong> (modelo de compartilhamento justo). No entanto, há casos em que tarefas necessitam de uma certa prioridade desses recursos (como mencionado anteriormente), fazendo então o uso do WLM, o qual envolverá a classificação de tarefas e especificações de regras de alocação de recursos, ou seja, fazendo com que o <strong>sistema aloque recursos necessários especificamente para tarefas definidas com uma prioridade determinada</strong>. Um exemplo disso, é que uma conta de usuário com privilégio de ADM, a qual possui características que priorizam o seu trabalho sobre os demais, fazendo com que suas atividades, execulções e tarefas sejam priorizadas sobre os recursos do sistema.</p>
+        <p>Um plano, é uma unidade de trabalho que é criada pelo otimizador para manipular uma consulta. Cada plano é baseado no conteúdo de uma consulta e nas estatisticas refeentes às tabelas nas quais a consulta tua. Uma consulta gerealmente resalta em um único plano, mas ocasionalmente, saõ gerados planos auxiliares adicionais. O planejador coloca cada plano que recebe em um conjunto de candidatos para execução.</p>
+        <p>Diante disso, se fazem presentes as técnicas WLM, pois o Netezza oferece de várias dessas técnicas para o gerenciamento de alocações de recursos:</p>
+        <ul>
+            <li><strong>Scheduler Rules</strong></li>
+                <p>Ou regras de planejador, as quais influenciam o planejamento dos planos. Cada <i>scheduler rules</i> especifica uma condição ou conjunto de condições, onde cada vez que um planejador recebe um plano, é avaliado todas as regras de modificação do planejador e executa as açõesapropriadas. O plano é executado apenas se isso não execer um limite imposto por uma regra do planejador. Isso fornece uma maneira de classificar e manipular planos de uma maneira que infliencia as outras técnicas WLM.</p>
+                <p>Para criação de uma <i>schedule rule</i>, é dado um comando NZSQL de <strong>create scheduler rule</strong>, tornando-a ativa após isso. Além disso, o seu criador possui a capacidade de desativa-la e ativar quando bem entender pelo comando de <strong>SET</strong>. O usuário também possui a possibilidade de listar todas as <i>scheduler rules</i> presentes no ambiente em que está inserido, através do comando<strong> show scheduler rule</strong>, ou até mesmo mudar suas propriedas, como nome e propietário, pelo comando de <strong>ALTER</strong>.</p>
+                <p>Essa <i>scheduler rules</i> vem a ser um objeto que influencia o planejamento dos planos, no qual serão especificados N condições, uma ação e se os planos de administração serão aplicados. Logo, essas regras podem ser dos seguintes tipos:</p>
+                <ul>
+                    <li><strong>Modifying</strong> - A regra de modificação modifica os atributos abordados no plano ou os anula, onde cada vez que o planejador recebe um plano, ele avalia todas as regras de modificação e executa as ações apropriadas, como no exemplo a seguir, onde um plano prioridade é modificado de normal para baixo: </li>
+                    <pre>
+                <strong>IF PRIORITY IS</strong> NORMAL <strong>THEN SET PRIORITY</strong> LOW
+                    </pre>
+                    <br>
+                    <li><strong>Limiting</strong> - Esta regra limita o número de planos que podem ser executados simultaneamente, onde cada vez que o planejador seleciona um plano para execução, é avaliada todas as regas limitadoras, executando-a apenas se o limite definido não for atingido, como no exemplo a seguir, onde é impedido que mias de um plano associada a uma consulta em tabelas ou bjetos no banco com nome DB1 seja executado:</li> 
+                    <pre>
+                <strong>IF DATABASE IS</strong> DB1 <strong>THEN LIMIT</strong> 1
+                    </pre>
+                    
+                </ul>
+            <li><strong>GRA</strong></li>
+                <p>Ou alocação garantida de recursos, onde é possível atribuir um compartilhamento mínimo e uma pocentagem máxima do total de recursos do sistema a entidades chamadas <i>resoucer group</i>. Garante assim que cada grupo de recursos receba recursos do sistema na proporção de seu compartilhamento mínimo (ou um compartilhamento de recursos maior quando outros grupos estão ociosos). Cada plano está associado a um grupo de recursos e as configurações desse grupo, determinam qual fração de recurss disponíveis do sistema, será utilizado para seu processamento, ou seja, são usadas para organizar cada grupo para receber uma porção X de recursos.</p>
+                <p>Um <i>resource group</i> é um grupo Netezza cujas <i>resources settings</i> determinam qualparte dos recursos do sistema de rede deve ser alocada aos planos associados a esse grupo. Por exemplo, é possível criar 3 grupos de recursos diferentes para os planos de analistas de dados, usuários que prodeuzem relatórios de consulta e todos os outros usuários, e depois providenciar para que cada um desses grupos receba uma fração diferente de recursos.</p>
+                <p>Cada plano que é processado no sistema Netezza, é associado a exatemnte um grupo derecursos. Se nenhumoutro grupo de recursos for criado para um sistema, todos os planos serão associados ao grupo defaulta (<i>public group</i>). No entanto, é possível criar grupos e recursos adicionais e associar planos a esses grupos com base em qualquer combinação dos seguintes critérios:</p>
+                <ol>
+                    <strong><li>Qual usuário enviou o trabalho correspondente</li></strong>
+                        <p>Cada usuário é designado a exatamente um grupo de recursos. Sempre que um usuário envia um trablho, os planos para esse trabalho são automaticamente associados ao grupo de recursos do usuário. É possível definir <i>scheduler rules</i> para substituir a associação de grupos de recursos de um plano com base no usuário que envia. Por exemplo, a seguinte regra <i>shceduler rule</i> associa todos os planos de tarefas enviados pelo usuário "Bob" ao <i>resouce group</i> "rsg42":</p>
+                        <pre>
+                    <strong>IF USER IS</strong> bob <strong>THEN EXECUTE AS RESOURCEGROUP</strong> rsg42
+                        </pre>
+                        <br>
+                    <strong><li>O conteudo dos campos de informações do client</li></strong>
+                        <p>Um administradorou programa de aplicativo pode definir o seguintes campos de informações do client em ua consulta:</p>
+                        <ul>
+                            <li><strong>User ID</strong> - ID do usuário sob qual o clint stá executando</li>
+                            <br>
+                            <li><strong>Application name</strong> - Nome do client</li>
+                            <br>
+                            <li><strong>Workstation name</strong> - O host name do workstation, no qual o client roda</li>
+                            <br>
+                            <li><strong>Accounting string</strong> - O valor de string do client especificadas para a sessão</li>
+                        </ul>
+                        <p>É possível usar das <i>schduler rules</i> para associar planos a diferentes grupos de recursos com base no conteúdo desses campos. Por exemplo, a seguinte <i>scheduler rule</i> associa todos os planos de tarefas enviados pelo Cognos ao grupo de recursos "rsg12":</p>
+                        <pre>
+                    <strong>IF CLIENT_APPLICATION_NAME IS</strong> Cognos <strong>THEN EXECUTE AS RESOURCEGROUP</strong> rsg12
+                        </pre>
+                        <br>
+                    <strong><li>Cost estimates</li></strong>
+                        <p>Para cada plano, o otimizador calcula o custo expectado de processamento para o plano. É possível usar das <i>scheduler rules</i> para associar planos de diferentes <i>resource groups</i> baseado no cálculo estimado do custo. Por exemplo, na seguinte <i>scheduler rules</i> que associa ps planos com o <i>resource group</i> "short", "medium" e "long" com base nas estimativas de custo dos planos:</p>
+                        <pre>
+                    <strong>IF ESTIMATE</strong> &lt; 4 <strong>THEN EXECUTE AS RESOURCEGROUP</strong> short
+                    <strong>IF ESTIMATE</strong> >= 4 <strong>ESTIMATE</strong> &lt; 30 <strong>THEN EXECUTE AS RESOURCEGROUP</strong> medium
+                    <strong>IF ESTIMATE</strong> >= 30 <strong>THEN EXECUTE AS RESOURCEGROUP</strong> long
+                        </pre>
+                    <strong><li>A database associada</li></strong>
+                        <p>É possível definir <i>scheduler rules</i> para associar planos a diferentes grupos de recursos com base em quais bases os planos acessam. Fazendo possível gerenciar a alocação de recursos com base na alocação. Por exemplo, as seguintes <i>scheduler rules</i> do planejador associam planos a difrentes <i>resource groups</i> com nase em qual base eles acessam:</p>
+                        <pre>
+                    <strong>IF DATABASE IS</strong> DBX1 <strong>TEHN EXECUTE AS RESOURCEGROUP</strong> X1
+                        </pre>
+                    <strong><li>Tabela a ser acessada</li></strong>
+                        <p>É possível também, definir regras para associar planos a diferentes grupos de recursos com base em quais tabelas os planos acessam. Dessa maneira, um DBA pode influenciar a alocação de recursos para aplicativos sem alterar os próprios aplicativos. Por exemplo, a seguinte <i>scheduler rule</i> associa um plano ao gupo de recursos "x2" se ele acessar a tabela "tab1" ou "tab2":</p>
+                        <pre>
+                    <strong>IF TABLE IN</strong> (tab1,tab2) <strong>THEN EXECUTE AS RESOURCEGROUP</strong> x2
+                        </pre>
+                </ol>
+            <li><strong>SQB</strong></li>
+                <p>Os recuros, como agendamento de <i>slots</i> e memória, são reservados para consultas curtas, paraa qual p cálculo de custus é menor que um valor máximo (2 segundos, mais ou menos). Pelo SQB, essas consultas curtas podem ser executadas mesmo quando o sistema está ocupado processando consuktas mais longas.</p>
+                <p>Dentro de cada <i>reosurce group</i>, é possível resevar recursos de agendamento e memoria para consultas curtas. Quando as as filas de agendado ficam cheias, consultas curtas podem tirar proveito de ecursos adicionais reservados especialmente para eles. Isso permite que o sistema execute consultas curtas, mesmo enquanto está coupado executando consultas longas. O custo de uma consulta se baseia no tempo necessário para sua execução, onde o otimizador usa de mecanismos internos e outros recursos para estiimar esse tempo antes que cada consulta seja executa (ou seja, é predestinado o quanto aquela consulta irá demorar para ser finzalida), dessa forma, o sistema possui um limite especificado pelo host, que irá definir o tempo exato para uma  consulta ser dada como curta e acima disso, sendo longa.</p>
+                <p>Quando a função SQB está ativada, o sistema reserva recursos de agendamento e memporia para consults curtas, fazendo com que sua consulta seja realizada em paralelo com uma consulta longa. Caso esta função esteja desativada, quando um usuário executar uma consulta curta enquanto o sistema está realizando uma execução longa, um atraso será definido paa o inicio dessa consulta curta. Portanto, há a possibilidade de alterar as configurações e parâmetros dessa função SQB no sistema Netezza, como por exemplo, definir que as consultas realizadas por um usuário serão sempre tidas como longas:</p>
+                <pre>
+            <strong>IF USER IS</strong> bob <strong>THEN SET</strong> NOT SHORT    
+                </pre>
+                <p>Em tesem os conceitos e definições são bem semelhantes a função GRA, onde é possível definir as regras para usuários, tabelas ou base.</p>
+            <li><strong>PQE</strong></li>
+                <p>Ou execução de consulta priorizada, é a atribuição do sistema de prioridades, como crítica, alta, normal ou baixa, a cada consulta. Esta prioridade pode ser realizada para depender de fatores como usuário, grupo ou sessão. Ou seja, a função PQE se baseia em definir qual consulta terá prioridade sobre as demais, podendo ser passado como parâmetro o usuário, tabela ou base da consulta em questão. Isso é feito para prioriza tarefas que requerem uma maior impotância em suas execuções (como backups, por exemplo)</p>
+        </ul>
+    </body>
+</html>
