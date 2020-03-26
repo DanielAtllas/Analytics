@@ -95,6 +95,10 @@
     
         <strong>GROOM TABLE</strong> Faculdade <strong>RECORDS ALL</strong>
         </pre>
-        
+        <ul>
+            <li><strong>Identificando uma tabela que requer o <i>grooming</i></strong></li>
+                <p>A grande questão, é identificar as tabelas que necessitam do comando de <i>GROOM</i>, uma vez que caso você tenha a total compreensão de tabelas que tiveram registros alterados, fica fácil identificar a necessidade do <i>GROOM</i>. Mas imagine um ambiente muito grande em que centenas de tabelas são usadas, fica bem mais dificícil aber quando um <i>GROOM</i> deverá ser executado (a menos que se crie uma rotina de execuçõs de GROOM's semanais). Para essa solução, o Netezza provê da existência de um <strong>script de identificação CBT</strong>, que são as tabelas que requerem desse procedimento.</p>
+                <p>Este script de identifcação, se econtra no diretório <strong>/nz/kit/bin/adm/tools/cbts_needing_groom</strong> do próprio servidor Netezza, ele lista todas as bases CBT qie possuem 960 ou mais páginas com essa necessidade de <i>grooming</i>, gerando comandos SQL que identificam as bases e gera comandos de <i>GROOM TABLE</i> para quaisquer delas que atendam esse limite de no mínimo 960 páginas.</p>
+        </ul>
     </body>
 </html>
