@@ -29,15 +29,72 @@
                     <li><strong>Versions</strong> - Migração de registros de versões anteriores da tabela. Colunas dropadas não serão exibidas e colunas adicionadas exibirão valores default.</li>
                 </ul>
         </ul>
-        <p>Há também a possibilidade de execução de um <i>grooming</i> usando do <strong>SQL Development Tool for Netezza</strong>, o <strong>Aginity</strong>. Uma interface gráfica para comandos de NZSQL diretamente nas bases Netezza, sem que seja necessária as instruções via linha de comando. Para isso, basta seguir os seguintes passos:</p>
-        <ol>
-            <li>Selecionar a opção de <strong>Groom Database</strong> na janela superior: Objects -> Database -> Groom Database</li>
-            <img src="https://dwgeek.com/wp-content/uploads/2016/07/Groom-Database-Aginity.jpg">
-            <br>
-            <li>Selecionar as tabelas que sofrerão a execução do <i>groom</i> e em seguida, selecionar a opçãode <strong>Start</strong> para a execução</li>,
-            <img src="https://dwgeek.com/wp-content/uploads/2016/07/Groom-Aginity.jpg">
-            <br>
-            
-        </ol>
+        <p>Portanto, a realização de <i>grooming</i> em uma tabela, se faz necessário sempre que um registro é atualizado, seja por ter sofrido um <i>UPDATE</i> ou <i>DELETE</i>. Isso se dá pelo fato de que ao realizar esses comandos de alteração de um registro, a tabela por medidas de segurança, salva o antigo registro na tabela de forma <strong>invisível</strong>, além de inserir uma ID de alteração em uma coluna invisível na tabela. Ou seja, no Netezza, sempre que um registro sofrer uma alteração, o seu formato antigo permanece inserido na tabela de forma invisível, fazendo a exigência de um comando de <i>grooming</i> na tabela para que esse "backup" seja deletado definitivamente do sistema. Além de que, um registro alterado ou deletado, muito provavemente não é maisrequisitado o seu antigo formato e por a tabela salvar seu formato original, o disco também irá sofrer uma carga no seu armazenamento, ou seja, esse registro não mais usado, ainda permanece em disco e na memória, gerando um peso maior e até mesmo, lentidão ou falta de desempenho de consultas.</p>
+        <p>Essas colunas e registros invisíveis, para que sejam vistas, devem ser solicitadas a tabela durante o comando <i>SELECT</i>, onde deve ser passada as colunas: <strong>datasliceid, createtexid, deletetexid</strong> e <strong>rowid</strong> e em seguida, as colunas que se deseja consultar. Ao executar este comando, verá que serão exibidas n consulta, outras colunas e registros que não são propriamente da tabela em questão e esses serão os registros e colunas vazias e para essa questão do <i>GROOM</i>, a coluna importante é a de <strong>deletexid</strong>, a qual registra uma ID para os valores que foram atualizados de alguma forma.</p>
+        <p>Perceba que a principio, essa coluna se encontrará com valor zero para todos os registros da tabela (mesmo aqueles que já sofreram alguma alteração), diante disso, é necessário o comando: <strong>SET SHOW_DELETED_RECORDS = TRUE</strong>, esse comando fará com que sejam exibidos todos os registros com formatação antiga que foram alterados e o seu compo de <i>deletexid</i>, estará com um valor diferente de zero.</p>
+        <p>Segue abaixo um exemplo dessa situação em que o <i>GROOM TABLE</i> é necessáio:</p>
+        <pre>
+        Matricula |      Nome
+        ---------- -----------------
+        UC1811013 | Marcos Jr
+        UC1548153 | José Lucas
+        UC2844631 | Antônio Ferreira
+        
+    
+    Imagine a necessidade de atualização desta tabela, onde a abreviação de "Marcos Jr" será alterado para "Marcos Junio". Para isso, é dado um comando de UPDATE:
+    
+    
+        <strong>UPDATE TABLE</strong> Faculdade <strong>SET</strong>  Nome = "Marcos Junio" <strong>WHERE</strong> Nome <strong>LIKE</strong> "Marcos Jr" <strong>AND</strong> Matricula <strong>LIKE</strong> "UC1811013"
+      
+      
+    Agora, a tabela se encontrará com o seguinte formato:
+    
+    
+        Matricula |      Nome
+        ---------- -----------------
+        UC1811013 | Marcos Junio
+        UC1548153 | José Lucas
+        UC2844631 | Antônio Ferreira
+        
+        
+    Seguindo o raciocínio, é dado o comando SELECT passando como parâmetro as colunas invisíveis: 
+    
+    
+        <strong>SELECT</strong> datasliceid, createtexid, deletetexid, rowid, * 
+        <strong>FROM</strong> Faculdade
+        
+        datasliceid | createtexid | deletetexid |  rowid   | Matricula |      Nome
+        ------------ ------------- ------------- ---------- ----------- -----------------
+                   1|       30218 |           0 | 20826003 | UC1811013 | Marcos Junio
+                   2|       30224 |           0 | 20826002 | UC1548153 | José Lucas
+                   3|       30220 |           0 | 20826001 | UC2844631 | Antônio Ferreira
+                   
+                   
+    Como mencionado anteriormente, a coluna deletetexid permanece com valores zero, mesmo dos registros já alterados.
+    Portanto, faz-se necessário o comando de exibição dos reigstros invisíveis:
+    
+    
+        <strong>SET SHOW_DELETED_RECORDS</strong> = TRUE
+        
+        
+    Agora, ao rodar o SELECT novamente, será exibido o registro "old" que foi alterado:    
+    
+        <strong>SELECT</strong> datasliceid, createtexid, deletetexid, rowid, * 
+        <strong>FROM</strong> Faculdade
+        
+        datasliceid | createtexid | deletetexid |  rowid   | Matricula |      Nome
+        ------------ ------------- ------------- ---------- ----------- -----------------
+                   1|       30210 |       30224 | 20826003 | UC1811013 | Marcos Jr
+                   1|       30218 |           0 | 20826003 | UC1811013 | Marcos Junio
+                   2|       30224 |           0 | 20826002 | UC1548153 | José Lucas
+                   3|       30220 |           0 | 20826001 | UC2844631 | Antônio Ferreira
+    
+    
+    E para que esse registro seja definitivamente excluido da tabela e que o sistema seja atualizado em seu disco e memória, é dado comando de GROOM TABLE:
+    
+    
+        <strong>GROOM TABLE</strong> Faculdade <strong>RECORDS ALL</strong>
+        </pre>
+        
     </body>
 </html>
