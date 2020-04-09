@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8">
+        <title>Arquitetura - Hadoop</title>
+        <meta name="description" content="Este é um site referênte à estudos sobre Analytics">
+    </head>
+    
+    <body>            
+        <h1>Arquitetura - Hadoop</h1>
+        <p>É necessário entender que o Hadoop <strong>não é um banco de dados</strong>, mas sim um framework para armazenamento e processamento de grandes conjuntos de dados, possuindo diferenças como:</p>
+            <ul>
+                <li>Modelo de computação</li>
+                    <ol>
+                        <li>Conceito de Jobs</li>
+                        <li>Cada job é uma unidade de trabalho</li>
+                        <li>não há controle de concorrência</li>
+                    </ol>
+                    <br>
+                <li>Modelo de dados</li>
+                    <ol>
+                        <li>Qualquer tipo de dado pode ser usado</li>
+                        <li>Dados em qualquer formato</li>
+                        <li>Modelo de apenas leitura</li>
+                    </ol>
+                    <br>
+                <li>Modelo de custo</li>
+                    <ol>
+                        <li>Máquinas de custo mais baixo podem ser usadas</li>
+                    </ol>
+            </ul>
+            <p>Diante disso, para que todos os dados sejam armazenados e estejma disponveis para o uso, o Hadoop utiliza de <strong>clusters</strong> que possuem essa capacidade de armazenamento, os chamados <strong>HDFS</strong>.</p>
+        <ul>
+            <li><strong>HDFS - Hadoop Distributed File System</strong></li>
+                <p>O HDFS é um <strong>sistema de distribuição de arquivos</strong> como o seu nome já informa, o qual é projetado para armazenar grandes arquivos, possuindo uma capacidade de <strong><i>Data Streaming</i></strong>, que utiliza de clusters de servidores (o cluster Hadoop). Uma das características dos clusters que possuem muitos <i>racks</i> compostos por muitos nós (servidores), é a <strong>falha de hardware</strong>. Característica essa que é evidente em qualquer cluster, pois essa falha é considerada uma <strong>norma e não excepção</strong>, ou seja, um certeza de que em algum momento, alguma parte do hardware do cluster irá falhar.</p>
+                <p>Uma instância HDFS pode consistir em centenas ou milhares de máquinas, onde cada uma armazena parte dos dados do sistema de arquivos. Diante dessa eminente falha no hardware, a detecção desses probrlmas e a rápida recuperação automática, são estratégias que devem estar sempre preparadas para uma arquitetura assim. Por esta questão, o cluster HDFS possui uma característica  que auxilia  nessa prevenção de riscos, através do <strong>data streaming</strong>.</p>
+                <p>O <i>streaming</i> de acesso ao conjunto dos dados é uma necessidade em aplicações que rodam no HDFS, as quais não são aplicações de uso geral (ou seja, diferente  das que comunmente são encontradas em sistemas de arquivos convencionais), pois o HDFS foi projetado para <strong>processamento em lote</strong> ao invés de uso interativo pelos usuários. A ênfase dessa arquitetura está na <strong>alta taxa de transferência de dados</strong>, ao invés da baixa latência de acesso, ou seja, possui uma capacidade de transferência de grandes cargas de dados em seus lotes do rack.</p>
+                <p>Como dito anteriormente, o HDFS fpo projetado para <strong>suportar gramdes massas de aquivos e dados</strong>, onde as aplicações que rodam no HDFS tem grandes conjuntos de dados e esses arquivos possuem <i>gigabytes</i> ou até mesmo <i>terabytes</i> de tamanho. Diante disso, o HDFS é ajustado para suportar esse peso em arquivos, fornecendo alta largura de banda e escala  para <strong>centenas de nós em um cluster</strong>, ou seja, possui capacidade de armazenar  dezenas de milhões d arquivos em uma única instância.</p>
+                <p>Outra característica do <i>hadoop distributed file system</i> é o seu <strong>modelo simples de concorrência</strong>, onde as aplicações precisam de um modelo de acesso onde o <strong>dado é escito uma vez e lido várias</strong>. Uma vez criado o arquivo, escrito e fechado, ele não precisa mais ser alterado, isto simplifica questões de concorrência de dados e permite o acesso a dados com alta taxa de transferência (Uma aplicação <i>mapreduce</i> se encaixa perfeitamente neste modelo).</p>
+            <li><strong>Componentes da arquitetura HDFS</strong></li>
+                <p>Um arquivo comum usual, possui o chamado <i>Inode</i>, onde é tido como o cabeçalho do arquivo, contendo o tipo e o nome do arquivo, as permissões, o propietário e a data de modificação. Abaixo, são encontrados os blocos do arquivo, nos quais são encontrados os registros presentes no mesmo, ou seja, onde se encontram os dados que compõem o arquivo. Esses blocos são copiados em outros blocos de mesmo conte´do e inseridos de forma separada no cluster, o chamado <strong>fator de replicação</strong>. Isso por medidas de segurança que serão mais explicadas posteriormente.</p>
+                <ul>
+                    <li><strong>Namecode</strong></li>
+                        <p>Ou <i>master</i>, é como uma representação do <i>Inode</i> dos arquivos, onde são encontrados os metadados como localização dos blocos, propietário do arquivo, permissões e etc. Este tem a identificação de onde cada bloco de um arquivo está armazenado no cluster, tendo a principal função de fazer a <strong>gestão dos metadados</strong>.</p>
+                        <p>Logo, o <i>Namenode</i> precisa estar sempre disponível no ambiente (uma boa prática dessa necessidade, é possuirum backup ou <i>Second Namenode</i> em um servidor diferente, onde caso o primeiro falhe ou apresente algum erro, o secundário assume o controle, como um HADR no DB2).</p>
+                    <li><strong>Datanode</strong></li>
+                        <p>Ou <i>worker</i>, o qual armazena os dados propriamente ditos, alocando os blocos dos arquivos armazenados, ou seja, essas são as <strong>máquinas do cluster que armazenam informação</strong>, e aqui acontece o chamado <strong>fator de replicação</strong>, onde é definido  pelo usuário em quantas replicações o bloco irá sofrer, fazendo com que o bloco se replique em N blocos de mesmo conteúdo nos <i>Datanodes</i> do cluster, sejam no mesmo ou em outros <i>racks</i> (esta ´uma medida de tolerância as falhas do cluster). Como no exemplo abaixo, onde cópias dos blocos de um arquivo são replicadas em diferentes nós do cluster. Neste caso, o arquivo em questão recebe o fator de 3 replicações para seus blocos, fazendo então com que cada bloco seja triplicado e armazenando-os nos nós.</p>
+                        <img src="https://danielatllas.github.io/Analytics-BI/ReplicacaoBlocos.png">
+                        <p>Perceba qie as cópias de um bloco podem se encontrar em um mesmo <i>rack</i>, isso pelo fato de que o compartilhamento de dados entre os nós de um mesmo <i>rack</i>, se torna mais rápida e com uma taxa de transferência maior. Assim, caso um nó falhe ou apresente erro, o outro irá assumir e o compartilhamento dos dados é realizado.</p>
+                </ul>
+                <p>A arquitetura do cluster Hadoop possui uma grande semelhança  com a arquitetura de um arquivo comum, o qual possui 2 entidades atuantes, o <strong>Namenode e Datanode</strong>.</p>
+                <p>Além de possuir serviços que são trabalhados para a realização do funcionamento do Hadoop, como:</p>
+                <ul>
+                    <li><strong>JobTracker</strong> - Função de disparar os jobs e ser executado pelos dados, sendo um gestor das execuções</li>
+                    <br>
+                    <li><strong>TaskTracker</strong> - Quem irá realizar a execução das tarefas</li>
+                </ul>
+                <p>Diante disso, os dados são enviados para o cluster Hadoop, adquirindo os dados independente de onde seja a fonte (seja um Banco SQL ou até mesmo de redes sociais), trabalho esse realizado pelo NameNode e DataNode.</p>
+                <p>Feito isso, é realizado o mapeamento e redução, realizado por um modelo de programa de linguagem de programação, realizados pelo desenvolvedor e processado e trabalhado peloJobTracker e TaskTracker</p>
+            <li><strong>Modos de configuração do Hadoop</strong></li>
+                <p>O Apache Hadoop pode ser configurado de 3 formas diferentes, pela sua liberdade e flexibilidade, permitindo ao usuário as configurações:</p>
+                <ol>
+                    <li><strong>StandAlone</strong> - Onde todos os serviços Hadoop são executados em uma única JVM (Java Virtual Machine), no mesmo servidor. Sendo recomendado apenas para ambientes de testes, tendo uma capacidade mais simplória.</li>
+                    <br>
+                    <li><strong>Pseudo Distribuído</strong> - Que são serviços individuais do Hadoop são atribuídos a JVM's individuais, ou seja, cada serviço Hadoop terá sua Virtual Machine, requerindo um grande capacidade de memória, no mesmo servidor.</li>
+                    <br>
+                    <li><strong>Totalmente Distribuído</strong> - Sendo o mais recomendado para ambientes de produção, os seus serviços individuais são executados em JVM's individuais, mas através do cluster.</li>
+                    <br>
+                </ol>
+            <li><strong>Distributed Cache</strong></li>
+                <p>Ou cache distribuído, é uma funcionalidade do Hadoop que permite cache dos arquivos usados pelas aplicações. Isso permite ganhos consideráveis na performance no acesso aos dados por MapReduce, além de permitir que um node do cluster acessos os arquivos no filesystem local.</p>
+            <li><strong>Kerberos</strong></li>
+                <p>Sendo um mecanismo de autenticação de segurança (também usado em sistemas de diretórios Windows e Linux). Por default, o Hadoop se encontra no modo <i>não-seguro</i> não necessitando da autenticação real, podendo ser configurado e executado em modo de segurança, onde cada usuário e serviço precisa ser autenticado pelo Kerberos, a fim de utilizar os serviços do Hadoop.</p>
+        </ul>
+        <hr>
+    </body>
+</html>
+        
