@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8">
+        <title>Acessos - Netezza - Analytics</title>
+        <meta name="description" content="Este é um site referênte à estudos sobre Analytics">
+    </head>
+    
+    <body>
+        <h1>Controle e Segurança de Acessos - Netezza</h1>
+        <p>Gerenciar a segurança do appliance Netezza é uma tarefa importante. É possível controlar os acessos ao sistema Netezza colocando o Appliance em um local seguro do data center (Para medidades de segurança contra riscos naturais e ambientais, assim como riscos físicos) e até mesmo, conytrolar os acessos através de uma network para o appliance, gerenciando as contas de usuário Linux que poderão acessar o sistema. Dessa forma, o gerenciamento de usuários e grupos do Linux se torna completamente integrado ao Netezza, assim como prevenções de permissões às databases, objetos e tarefas que irão rodar no sistema (através de comandos SQL).</p>
+        <p>Este artigo irá descrever como administrar os <strong>usuários de acesso as bases Netezza</strong> e como aplicar as devidas permissões a eles para o manuseio das tarefas e etc. Assim como, os controles de sessões realizadas pelos usuários, limites de consultas e prioridades que podem gerar impacto na performance dos mesmos.</p>
+        <p>As contas Linux permitem que seus usuários estejam integrados ao servidor Netezza, porém, não os permite realizar execuções de queries nas bases Netezza via SQL (nem outras funções, como visualizar objetos, jobs e etc), podendo até mesmo um usuário possuir 2 usernames e senhas para acesso ao sistema operacional e ao prórprio Netezza.</p>
+        <ul>
+            <li><strong>Usuários e grupos das bases Netezza</strong></li>
+                <p>Como dito anteriormente, para acessar as bases do Netezza, são necessárias contas de usuários para isso. Quando um usuário acessa uma base seja através de comandos NZSQL ou interface, a base determina os privilégios de acessos aos objetos do banco e as permissões que este usuário possui para execução de tarefas (esta é uma verificação automática do sistema, que analisa os poderes que cada usuário possui ao acessar o servidor). Esta concessão de privilégios ao usuário específico, deve partir de um putro usuário que possua um maior poder entre o servidor e as bases, para que forneça privilégios à ele, seja de consulta ou escrita (<i>SELECT, INSERT, UPDATE e DELETE</i>) ou até mesmo, criar <strong>grupos</strong> organizados no Netezza ou <strong>roles</strong> para estes usuários. Dessa forma, basta que sejam concedidas permissões as roles e que usuários sejam inseridos à elas. Caso um usuário deixe de possuir esses privilégios, baste retira-lo da role em questão. Ou seja, os usuários que estiverem inseridos nesses groupos ou roles, são automaticamente privilegiados as permissões que aquele grupos/role possui.</p>
+                <p>Se um usuário é membro de mais de um grupo, à ele serão concedidas uma "união" de privilégios, ou seja, ao usuário X serão concedidas tantas as permissões do grupo A como do grupo B (independente se em um desses grupos, não há permissão que o outro possui). Esta questão funciona da seguinte forma, imagine que um usuário <i>user1</i> está integrado a um grupo <i>group1</i> e ao grupo <i>group2</i>. Nestes grupos estão concedidas as permissões de <i>CREATE</i> de objetos nas bases do Netezza. Dessa forma, o usuário <i>user1</i> em sí, não tem permissão alguma, tanto que se retira-lo dos <i>group1 e group2</i>, o <i>user1</i> poderá apenas logar ao servidor. Caso o usuário seja retirado apenas de um dos grupos (fazendo parte agora, apenas do <i>group2</i> por exemplo) ele permanecerá com o privilégio de <i>CREATE</i> de objetos, uma vez que o <i>group2</i> concede esse poder aos seus membros.</p>
+                <p>Diante disso, é recomendado o uso de grupos nos servidores Netezza, uma vez que fica mais fácil a sua gerência de permisões para os usuários que estiverem integrados ao grupo, mesmo uqe o grupo tenha apenas 1 membro. Sendo mias complicado os privilégios individuas à usuários, já que X usuários podem ser adicionados ao servidor a cada dia, retirados, permissões podem ser acrescentadas ou excluidas.</p>
+                <p>A criação desses grupos pode ser afeita através de 3 métodos:</p>
+                <ol>
+                    <li>Através de comandos <strong>NZSQL</strong>, sendo o método mais comum de concessão de privilégios à usuários e grupos.</li>
+                    <br>
+                    <li>Através do <strong>NzAdmin Tool</strong>, ou seja, uma interface gráfica que facilita essas operações e gerenciamento dos usuários, grupos e permissões.</li>
+                    <br>
+                    <li>Através de <strong>Web Admin</strong> que provê de uma interface a partir de um navegador web, funcionando da mesma forma do NzAdmin para o gerenciamento dos usuários e grupos.</li>
+                    <br>
+                </ol>
+                <p>Diante disso, será descrito a seguir, como gerenciar esses usuários e grupos a partir dos comandos NZSQL (SQL - Netezza), uma vez que via interface gráfica se torna mais simples, interativo e didático.</p>
+            <li><strong>Desenvolvimento de modelo de acessos</strong></li>
+                <p>O Netezza recomenda a criação de um desenvolvimento de um modelo de acessos para o Appliance, onde será um <strong>profile</strong> dos usuários que requerem acesso ao Netezza e suas permissões, tarefas e etc. Normalmente, esses modelos se iniciam bem modestos, com alguns usuários e grupos, porém com o decorrer de aumento das bases e da empresa que se está inserido, novos usuários são desenvolvidos e inseridos no sistema. Este modelo, irá definir os usuários, roles e os tipos de tarefas de performance que uma base requer para o acesso.</p>
+                <p>Esses modelos de acesso podem ser variados de compania e empresas, mas, um exemplo básico deste desenvolvimento, é um modelo a partir de uma <strong>árvore de grupos</strong> dos usuários que acessam as bases, sendo composto por:</p>
+                <ul>
+                    <li><strong>Administrators</strong> - Uusários que possuem a maior responsabilidade dentro do servidor e suas databases, sendo o responsável por gerenciar as tarefas e serviços do Netezza, podendo gerenciar específicas bases, acessos deusuários, tarefas de criação de banco, dados e até backups's e restores das bases. Ou seja, vem a ser o usuário com o maior privilégio em uma base, com o maior poder possível (de extremo risco, destinado apenas aqueles que realmente necessitam deste privilégio).</li>
+                    <br>
+                    <li><strong>Power database users</strong> - Usuários uqe possuem um poder de acesso à bases críticas e conseguem executar queries mais complexas que os usuários gerias, ou seja, serão os usuários que poderão realizar queries de risco, como <i>DELETE</i></li>
+                    <br>
+                    <li><strong>General database users</strong> - ou usuários gerais, onde é concedido o acesso a uma ou mais bases e o poder de realização de queries, além de não ser concedida todas as permissões (fato este que pode variar de usuário, onde alguns poderão realizar comandos de risco e outros não, como <i>UPDATES/DELETES</i>).</li>
+                </ul>
+            <li><strong>Usuários e grupos default do Netezza</strong></li>
+                <p>O Netezza possui por default, possui um usuário de bases admin e um grupo público, o chamado <strong>admin database user</strong>, o qual possui todos os privilégios e acessos a todas bases e seus objetos. Por possui um enorme poder de permissões dentro do servidor, este usuário possui uma senha que é passada para aqueles com capacidade para isso (normalemnte, DBA's), os quais irão acessar esse profile para fazer operações de risco no Netezza. Além disso, este usuário é acessado em uma primeira viagem, para que a partir dele sejam criados novos usuários e assim seja iniciada a árvore de privilégios, usuários e grupos. Este usuário, possui as segintes características:</p>
+                <ul>
+                    <li>A senha padrão é <i>password</i>, estando submetida a alterações por medidas de segurança, a partir do comprador.</li>
+                    <br>
+                    <li>Não é possível deletar este usuário.</li>
+                    <br>
+                    <li>Não é possível mudar o nome de usuário e nem mermo o proprietário deste profile.</li>
+                    <br>
+                    <li>Ao contrário de todos os outros objetos, este usuário específico, não possui um proprietário.</li>
+                    <br>
+                    <li>Este usuário não é exibido na lista de usuários do Netezza, apenas na lista de administradores.</li>
+                    <br>
+                </ul>
+                <p>O <strong>public group</strong> é o grupo default de todos os usuários Netezza, onde todo e qualquer usuário novo que adicionado ao sistema, será automaticamente inserido como membro deste grupo e não podem ser removidos. O proprietário deste grupo, é o próprio usuário admin inicial do sistema citado acima, o qual não pode ser alterado. É possível inserir a este grupo, privilégios iniciais para os usuários que serão criados, dessa forma, sempre que um usuário for criado, terá uma privilégio X nas bases.</p>
+            <li><strong>Escolhendo um método de autentiação de usuário</strong></li>
+                <p>Por default, ao criar um novo usuário para o Ntezza, deverá também ser passada uma senha de acesso à ele. Esta senha é salvada junto ao usuário em uma database Netezza e quando o usuário logar em uma base ou realizar um comando e especificar seu profile e senha Netezza, é verificada a senha de acesso armazenada no vanco através de uma autenticação local.</p>
+                <p>O Netezza também suporta a opção de autenticar usuários através de um servidor LDAP, a chamada <strong>LDAP Authentication</strong>. Dessa forma, é possível usar o servidor LDAP para autenticar usuários de databases e gerir senhas ou ativação/desativação das contas.</p>
+            <li><strong>Configurando o controle de senhas e expiração</strong></li>
+                <p>O Netezza usa de utilidades <i><strong>pam_cracklib</strong></i> para impor senhas de usuários nas bases que serão acessadas, provendo de fortes regras para ajudar usuários a evitar o uso de senhas fracas ou fáceis. O  <i><strong>pam_cracklib</strong></i> possui um dicionário que não permite o uso de palavras comuns para a definção de senhas, pois é evidente que senhas baseadas em  nomes ou palavras escritas inversamente, se tornam mais vulneráveis a "hacking". Porém, esta é uma configuração possível ao usuário, dando a ele a capacidade de uma exigência na criação de senhas e até mesmo o seu tempo de expiração (comumente, senhas possuem um padrão definido de expiação, forçando que o usuário à altere constantemente para sua segurança), através do <strong><i>system-wide</i></strong>.</p>
+                <p>Para setar o controle de expiração de senhas à usuários, usa-se do comando: <strong>set system default passwordexpiry to</strong> <i>days</i>, onde esses dias serão exatamente relacionado ao tempo de druação de uma senha até ter de troca-la (por default, o sistema armazena como 0, fazendo com que não haja uma data de expiração).</p>
+                <p>Quando uma conta de usuário é expirada, o mesmo terá seu aocesso ao Netezza limitado, onde não poderá fazer conexões às bases do Netezza. Porém, a única querie permitida ao usuário é a de <strong>ALTER USER</strong>, onde será redefinida a senha, como no exemplo a seguir:</p>
+                <pre>
+            <strong>alter user</strong> <i>usuario</i> <strong>with password</strong> <i>'nova senha'</i>;
+                </pre>
+                <p>Além disso, o usuário com poder de Admin, possui o privilégio de expirar uma senha de acordo com sua vontade, através do comando <strong>ALTER USER</strong> <i>myuseracct</i> <strong>EXPIRE PASSWORD;</strong>, onde a expiração não afetará asessão atual do usuário em questão, caso esteja logado à uma base. Mas no próximo momento em que o usuário tentar logar na mesma base, sua conexão será barrada devida a expiação, necessitando assim a troca de senha pelo comando citado.</p>
+            <li><strong>Criando usuários de bases Netezza</strong></li>
+                <p>Para criar um usuário é necessário logar na base em questão usando uma conta criada com os privilégios de administrador (usuário admin), feito isso, basta realizar o comando de <strong>CREATE</strong> com o nome de usuário e sua senha para que o mesmo seja criado (lembre-se que um usuário criado, não possui os privilégios necessários de conexão, necessitando posteriormente, lhe consedento as permissões):</p>
+                <pre>
+            <strong>create user</strong> <i>usuário</i> <strong>with password</strong><i>'senha'</i>;
+                </pre>
+                <p>Caso o sistema esteja utilizando de uma autentcação LDAP, não é necessária a especificação da senha. O comando de <strong>CREATE USER</strong> possui várias opções que se pode usar para especificar o tempo limite, expiração das contas, número máximo de registros qu uma consulta poderá trazer e prioridades às sessões dos usuários e as queries criadas. Além disso, ao serem criados grupos e usuários, também poderão ser definidos o seu tempo de acesso que o usuário terá na base em questão e até mesmo definindo em quais dias o usuário podera acessa-la. Dessa forma, caso o usuário tente acessar a base em um dia que sua permissão não é aceita, uma mensagem de erro é exibida à ele reportando a impossibilidade de acesso, da mesma forma no caso de o usuário tentar executar um comando NZSQL de criação de sessão.</p>
+                <p>Outra possibilidade, é a de alteração dos termos do usuário, como alteração do nome, senha, expiração, propietário e configurações de sessões em uma base em que o usuário esteja vinculado, assim como o desbloqueio de uma conta de usuário caso ela esteja bloqueada por algum motivo. Funções essas realizadas através do comando <strong>ALTER USER</strong>, como no exemplo abaixo de inserção de um usuário como membro de um grupo:</p>
+                <pre>
+            <strong>alter user</strong> <i>usuário</i> <strong>with in resourcegroup</strong> <i>grupo</i>
+                </pre>
+            <li><strong>Deletando um usuário</strong></li>
+                <p>Através do comando <strong>DROP USER</strong> é executada a função de deleção ou drop de um usuário de uma base existente, onde é necessário que o usuário que faça isso, possua os devidos privilégios de <i>DROP</i> em uma database, como no exemplo abaixo:</p>
+                <pre>
+            <strong>drop user</strong> <i>usuário</i>;
+                </pre>
+                <p>Caso a conta eque serádropada seja propietária de algum objeto, o comando de <i>DROP</i> irá gerar uma mensagem de erro informado a impossibilidade de remoção do usuário.</p>
+            <li><strong>Criando grupos no Netezza</strong></li>
+                <p>Para a criação de um grupo no Netezza, é necessário o log in na base usando de uma conta com privilégio de <strong>CREATE</strong> e seguir com os seguintes procedimentos:</p>
+                <pre>
+            <strong>CREATE GROUP</strong> <i>grupo</i>;
+            
+            ou
+            
+            <strong>CREATE GROUP</strong> <i>grupo</i> <strong>with user</strong> <i>usuário</i>;
+                </pre>
+                <p>Neste comando de criação de grupo, são inclusas as opções de especificação de <i>timeout</i> ao seus membros, máximo de registros possíveis a uma consulta e prioridades de sessões e queries entre os membros, além disso, a propriedade do grupo criado se torna ligada ao seu usuário criador. Da mesma forma quehá a possibilidade de alteração dos termos de um grupo, como o nome, seus membros (inclusão/remoção), configurações de sessão e propietário. Funções essas realizadas pelo comando de <strong>ALTER</strong> por um suário com tal privilégio, como no exemplo a seguir, onde um usuário X é removido do grupo:</p>
+                <pre>
+            <strong>alter group</strong> <i>grupo</i> <strong>drop user</strong> <i>usuário</i>;
+                </pre>
+            <li><strong>Deletando um grupo</strong></li>
+                <p>É possível usar do comando <strong>DROP GROUP</strong> para que um grupo seja removido do banco de dados do sistema, através da instrução:</p>
+                <pre>
+            <strong>drop group</strong> <i>grupo</i>;
+                </pre>
+        </ul>
+    </body>
+</html>

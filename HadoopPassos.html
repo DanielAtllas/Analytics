@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+
+<html lang="pt-br">
+    <head>
+        <meta charset="utf-8">
+        <title>Hadoop - Primeiros Passos</title>
+        <meta name="description" content="Este é um site referênte à estudos sobre Analytics">
+    </head>
+    
+    <body>
+        <h1>Primeiros Passos - Hadoop</h1>
+        <p>Após compreender a introdução de como funciona o hadoop e sua arquitetura, seus objetivos e funcionalidades, é hora de começar a usar de seu apache para inicar os estudos práticos. Para isso, recomenda-se usar da plataforma <strong>Cloudera</strong>, a qual é uma empresa de software que fornece uma plataforma para engenharia de dados, <i>Data Warehouse</i>, <i>Machine Learning</i> e etc. Entre elas. o apache Hadoop também está no seu <i>client</i> de forma <i>open source</i> para os usuários. Diante disso, seguem abaixo algumas dessas formas de uso do Cloudera para usufruir do Apache Hadoop:</p>
+        <ul>
+            <li><strong>Cloudera QuickStart</strong></li>
+                <p>Estes são clusters virtuais de apenas um nó, os quais facilitam a implementação rápida do cloudera para objetivos de teste e estudos, e inclem o <i>Manager</i> para gerenciar o seu cluster, ou seja, será como um cluster virtual de menor capacidade destinado para aprendizagem de seus usuários. O download desta plataforma se encontra disponível para ambientes virtuais como Virtual Box, VMWare e Docker, necessitando apenas escolher a versão do Cloudera que se deseja usar e baixa-la para o ambiente desejado (Lembrando que o sistema operacional virtual pré-requisitado é de sistema <strong>Linux</strong>).</p>
+                <p>Para mais informações, acesse o link de instrução de instalção e especificações detalhadas desta plataforma: <a href="https://docs.cloudera.com/documentation/enterprise/5-14-x/topics/cloudera_quickstart_vm.html">https://docs.cloudera.com/documentation/enterprise/5-14-x/topics/cloudera_quickstart_vm.html</a>. Neste link, terá o <i>jumper link</i> para o site da Cloudera em que o download será feito. Ao escolher a opção <i><strong>Try Now</strong></i> o usuário deverá passar algumas informações pessoais para fins de entendimento do sistema para os seus objetivos e então será exibido o tutorial de instalção</p>
+                <p>Basicamente, o usuário irá entar em sua máquina Linux e passar os seguintes comandos em bash:</p>
+                <ol>
+                    <li>$ wget https://archive.cloudera.com/cm7/7.0.3/cloudera-manager-installer.bin</li>
+                    <br>
+                    <li>$ chmod u+x cloudera-manager-installer.bin</li>
+                    <br>
+                    <li>$ sudo ./cloudera-manager-installer.bin</li>
+                </ol>
+        </ul>
+        <p>Tendo baixado e instalado o gerenciador de máquina virtual como o próprio Cloudera Quickstart, será preciso subir esta máquina para o acesso. O cloudea que será usado funcionará como um ambiente Hadoop e potanto, seguiremos com os estudos em cima dele. Uma vez que o Hadoop trbalha com dados, obviamente precisaeremos de dados para serem trabalhados pela plataforma e para que usemos de dados já existentes, baixaremos o <i>dataset movielens</i> (uma base de dados sobre avaliações de filmes, totalmente gratuito para uso). Este <i>dataset</i> pode ser encontrado no site <a href="https://grouplens.org/datasets/movielens/">https://grouplens.org/datasets/movielens/</a> e selecione o download do <i>ml-10m.zip</i> na opção <strong>MovieLens 10M Dataset</strong>.</p>
+        <p>Após baixar esse <i>dataset</i>, iremos usar e trabalhar diretamente com o <strong>HDFS</strong> para mexer com este arquivo baixado. Logo, abra o <strong>bash</strong> da máquina usada e como primeiro afazer, liste os arquivos presentes no HDFS atualmente, através do comando:</p>
+        <pre>
+    <strong>hdfs dfs -ls/</strong>
+        </pre>
+        <p>Perceba a presença do prefixo "<strong>hdfs dfs</strong>" que serve par indicar a realização de comandos que usem do próprio HDFS. Listado os arquivos do HDFS, 6 diferentes arquivos serão exibidos, sendo eles os diretórios <i>default</i> do mesmo. Agora, iremos mover o arquivo do <i>dataset</i> baixado para o diretório <strong>/user</strong> do HDFS. Primeiramente, iremos verificar se o <i>dataset</i> foi realmente baixado, entrando no diretório <strong>downloads</strong> da máquina e listando seus registros:</p>
+        <pre>
+    <strong>cd</strong> downloads
+    <strong>ls -lh</strong>
+        </pre>
+        <p>O <i>dataset</i> em questão será apresentado com o nome <i><strong>ml-10m.zip</strong></i>. Caso ele seja exibido, por medidas de organização, criaremos uma pasta dentro do diretório <strong>/user</strong> do HDFS e a nomearemos de <strong>dados</strong> e por iremos mover o arquivo para esta nova pasta, através dos comandos:</p>
+        <pre>
+    <strong>hdfs dfs -mkdir</strong> /user/cloudera/dados
+    <strong>hdfs dfs -put</strong> ./ml-10m.zip/user/cloudera/dados
+        </pre>
+        <p>E listaemos a pasta <i>dados</i> para termos certeza de que o arquivo foi movido corretamente:</p>
+        <pre>
+    <strong>hdfs dfs -ls</strong> /user/cloudera/dados
+        </pre>
+        <p>Estando presente no diretório, podemos realizar verificações e manipulações com o mesmo, por exemplo a <strong>verificação e modificação do fator de replicação</strong> de um arquivo (essa alteração do fator, seja aumentado ou reduzindo, é algo que deve ser analisado para com o ambiente e cluster que estão sendo trabalhados), através do comando:</p>
+        <pre>
+    <strong>hadoop fs -start %r</strong> /user/cloudera/dados/ml-10m.zip
+        </pre>
+        <p>Provavelmente, este arquivo possuirá apenas 1 fator de replicação, o que é muito poblemático em caso de falhas e erros com o próprio cluste. Portanto, modificaremos esse fator para <strong>3 fatores de replicação</strong> do mesmo arquivo, onde esta alteração é realizado pelo comando:</p>
+        <pre>
+    <strong>hadoop fs -setrep</strong> 3 /user/cloudera/dados/ml-10m.zip
+        </pre>
+        <p>Realizando o comando acima, a alteração será realizada e por capricho, podemos verificar se realmente o fator de replicação é agora de 3 fatores, pelo comando já citado acima "<strong>start %r</strong>. Além desses, existem outros comandos que realizam diferentes funções no HDFS, onde os principais serão listados abaixo:</p>
+        <img src="https://danielatllas.github.io/Analytics/HDFS1.png">
+        <img src="https://danielatllas.github.io/Analytics/HDFS2.png">
+        <img src="https://danielatllas.github.io/Analytics/HDFS3.png">
+    </body>
+</html>
